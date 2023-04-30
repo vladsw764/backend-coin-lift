@@ -1,13 +1,13 @@
 # API for coinmarketcap.com
 coinmarketcap:
   api:
-    key: 384e5b68-5b3b-483e-8f32-20416f0126a1
+    key: **********************
 
 # API for rapidapi.com
 rapid:
   coindesk:
     api:
-      key: c5e59c9d54msh4ecd91925eb53a5p18e1b8jsn792a009bf863
+      key: ******************************
 
 # Datasource configuration
 spring:
