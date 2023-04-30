@@ -7,7 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CryptocurrencyData {
+public class CryptoPercentData {
     private String name;
     private double percentChange24h;
 }
