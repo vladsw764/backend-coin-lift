@@ -10,9 +10,11 @@
 
 # Adding the API Key to a Spring Boot Project
 
-1. Open the application.properties file of your Spring Boot project, located in the src/main/resources directory.
+1. Open the application.yaml file of this Spring Boot project, located in the src/main/resources directory.
 2. Add the following line to the file, replacing <YOUR_API_KEY> with the API key you obtained from CoinMarketCap:
 ```agsl
-coinmarketcap.api.key=<YOUR_API_KEY>
+coinmarketcap:
+    api:
+       key: <YOUR_API_KEY>
 ```
 3. Save the file and restart your Spring Boot application.
