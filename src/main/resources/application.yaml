@@ -1,20 +1,9 @@
-# API for coinmarketcap.com
-coinmarketcap:
-  api:
-    key: **********************
-
-# API for rapidapi.com
-rapid:
-  coindesk:
-    api:
-      key: ******************************
-
 # Datasource configuration
 spring:
+  config:
+    import: secrets.yaml
   datasource:
     url: jdbc:postgresql://coin-lift-db.cwisjiyig4ci.eu-north-1.rds.amazonaws.com:5432/coinlift_db
-    username: postgres
-    password: pIhbas-kotxan-vugxo4
   jpa:
     hibernate:
       ddl-auto: create-drop
