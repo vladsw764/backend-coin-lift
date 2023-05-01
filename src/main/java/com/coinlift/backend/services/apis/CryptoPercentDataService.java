@@ -1,4 +1,4 @@
-package com.coinlift.backend.services;
+package com.coinlift.backend.services.apis;
 
 import com.coinlift.backend.pojo.CryptoPercentData;
 import org.json.JSONArray;
