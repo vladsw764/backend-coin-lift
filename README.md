@@ -1,6 +1,36 @@
 # backend-coin-lift
+## Requirements:
+- PostgreSQL database for correct migration
 
-# Obtaining API Keys from CoinMarketCap and Coindesk
+## Getting Started
+
+1. Clone the repository to your local machine.
+2. Open the `application.yaml` file located in `src/main/resources` and update the datasource configuration with your own database details:
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://<DATABASE_HOST>:<DATABASE_PORT>/<DATABASE_NAME>
+    username: <DATABASE_USERNAME>
+    password: <DATABASE_PASSWORD>
+```
+3. Obtain the API keys from CoinMarketCap and Coindesk **_(instructions below)_**.
+4. Add the API keys to the Spring Boot project by updating the application.yaml file:
+```yaml
+coinmarketcap:
+  api:
+    key: <YOUR_API_KEY>
+
+rapid:
+  coindesk:
+    api:
+      key: <YOUR_API_KEY>
+```
+5. Save the application.yaml file and restart the Spring Boot application.
+6. Build the project by running `mvn clean package`.
+7. Run the project by running `java -jar target/backend-0.0.1-SNAPSHOT.jar`.
+
+
+## Instruction for obtaining API Keys from CoinMarketCap and Coindesk
 
 ## Obtaining a CoinmarketCap API Key
 1. Go to the [CoinMarketCap](https://coinmarketcap.com) website and sign up for an account, or log in if you already have one.
