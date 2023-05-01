@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "posts")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
