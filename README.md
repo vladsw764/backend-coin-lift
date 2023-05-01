@@ -48,7 +48,6 @@ coinmarketcap:
     api:
        key: <YOUR_API_KEY>
 ```
-3. Save the file and restart your Spring Boot application.
 
 ## Obtaining a Coindesk API Key
 
@@ -69,5 +68,4 @@ rapid:
     api:
       key: <YOUR_API_KEY>
 ```
-3. Save the file and restart your Spring Boot application.
 
