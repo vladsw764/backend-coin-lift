@@ -8,17 +8,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CryptoEventsService {
     private static final String API_BASE_URL = "https://api.coinpaprika.com/v1/coins/";
     private static final String API_EVENT_ENDPOINT = "/events";
     List<String> topCryptos = Arrays.asList("btc-bitcoin", "eth-ethereum",
-            "bnb-binance-coin", "ada-cardano", "xrp-xrp", "doge-dogecoin",
-            "dot-polkadot", "uni-uniswap", "bch-bitcoin-cash", "ltc-litecoin");
+            "bnb-binance-coin", "ada-cardano", "xrp-xrp");
 
     public List<CryptoEvent> getLatestCryptoEvents() {
         RestTemplate restTemplate = new RestTemplate();
@@ -28,10 +25,12 @@ public class CryptoEventsService {
             String apiUrl = API_BASE_URL + crypto + API_EVENT_ENDPOINT;
             CryptoEvent[] cryptoEvents = restTemplate.getForObject(apiUrl, CryptoEvent[].class);
             for (CryptoEvent event : cryptoEvents != null ? cryptoEvents : new CryptoEvent[0]) {
+                String result = crypto.substring(crypto.indexOf('-') + 1);
                 LocalDateTime eventDate = LocalDateTime.parse(event.getDate(), DateTimeFormatter.ISO_DATE_TIME);
                 if (eventDate.isAfter(LocalDateTime.now().minusDays(1))) {
                     ZonedDateTime zonedEventDate = ZonedDateTime.parse(event.getDate()).withZoneSameInstant(ZoneId.systemDefault());
                     event.setDate(zonedEventDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    event.setCryptoName(result.toUpperCase());
                     events.add(event);
                 }
             }

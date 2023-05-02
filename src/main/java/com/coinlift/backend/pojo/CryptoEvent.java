@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CryptoEvent {
+    private String cryptoName;
     private String date;
     private String name;
     @JsonProperty("is_conference")
