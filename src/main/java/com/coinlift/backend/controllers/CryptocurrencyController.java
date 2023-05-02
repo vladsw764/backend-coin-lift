@@ -1,10 +1,11 @@
 package com.coinlift.backend.controllers;
 
+import com.coinlift.backend.pojo.CryptoData;
 import com.coinlift.backend.pojo.CryptoEvent;
 import com.coinlift.backend.pojo.CryptoPercentData;
 import com.coinlift.backend.pojo.CryptocurrencyNews;
 import com.coinlift.backend.services.apis.CryptoEventsService;
-import com.coinlift.backend.services.apis.CryptoPercentDataService;
+import com.coinlift.backend.services.apis.CryptoDataService;
 import com.coinlift.backend.services.apis.CryptocurrencyNewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cryptocurrency")
 public class CryptocurrencyController {
-    private final CryptoPercentDataService dataService;
+    private final CryptoDataService dataService;
     private final CryptocurrencyNewsService newsService;
     private final CryptoEventsService eventsService;
 
     @GetMapping("/percent-data")
     public ResponseEntity<List<CryptoPercentData>> getCryptoPercentData() {
         return ResponseEntity.ok(dataService.getCryptoPercentData());
+    }
+
+    @GetMapping("/all-data")
+    public ResponseEntity<List<CryptoData>> getCryptoData() {
+        return ResponseEntity.ok(dataService.getAllCryptoData());
     }
 
     @GetMapping("/news")
