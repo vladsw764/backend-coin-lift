@@ -10,4 +10,5 @@ import lombok.Setter;
 public class CryptoPercentData {
     private String name;
     private double percentChange24h;
+    private String imageUrl;
 }
