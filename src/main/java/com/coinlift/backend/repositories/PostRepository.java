@@ -9,8 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Query("select p from Post p where p.id = ?1")
-    Optional<Post> findById(UUID postId);
+    Optional<Post> findById(UUID id);
 
     @Query(value = "SELECT * FROM posts LIMIT 6", nativeQuery = true)
     List<Post> findLatestPosts();
