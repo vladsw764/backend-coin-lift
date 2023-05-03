@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface PostService {
     List<PostResponseDto> getLatestPosts();
     PostDetailsResponseDto getPostById(UUID postId, Pageable pageable);
-    PostResponseDto removePost(UUID postId);
+    void removePost(UUID postId);
     UUID createPost(PostRequestDto postRequestDto);
-    PostResponseDto updatePost(UUID postId);
+    PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto);
 }
