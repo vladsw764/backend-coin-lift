@@ -18,7 +18,8 @@ import java.util.UUID;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    @Column(columnDefinition = "UUID")
+    private UUID id;
     @Column(nullable = false)
     private String content;
     @CreationTimestamp
