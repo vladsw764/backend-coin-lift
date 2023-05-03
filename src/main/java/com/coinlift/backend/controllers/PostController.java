@@ -20,6 +20,12 @@ import java.util.UUID;
 public class PostController {
     private final PostService postService;
 
+    @GetMapping
+    public ResponseEntity<List<PostResponseDto>> getAllPosts(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "30") int size) {
+        return new ResponseEntity<>(postService.getAllPosts(page, size), HttpStatus.OK);
+    }
+
     @GetMapping("/latest")
     public ResponseEntity<List<PostResponseDto>> getLatestPosts() {
         return new ResponseEntity<>(postService.getLatestPosts(), HttpStatus.OK);
