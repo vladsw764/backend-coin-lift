@@ -1,5 +1,6 @@
 package com.coinlift.backend.mappers;
 
+import com.coinlift.backend.dtos.comments.CommentResponseDto;
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
@@ -7,17 +8,19 @@ import com.coinlift.backend.entities.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class PostMapper {
-    private final CommentMapper commentMapper;
-    public PostDetailsResponseDto toPostDetailsResponseDto(Post post) {
+
+    public PostDetailsResponseDto toPostDetailsResponseDto(Post post, List<CommentResponseDto> commentResponseDtos) {
         return PostDetailsResponseDto.builder()
                 .title(post.getTitle())
                 .content(post.getContent())
                 .imageLink(post.getImageLink())
                 .createdAt(post.getCreatedAt())
-                .comments(post.getComments().stream().map(commentMapper::toCommentResponseDto).toList())
+                .comments(commentResponseDtos)
                 .build();
     }
 
