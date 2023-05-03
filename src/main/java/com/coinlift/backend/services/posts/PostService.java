@@ -10,8 +10,14 @@ import java.util.UUID;
 
 public interface PostService {
     List<PostResponseDto> getLatestPosts();
+
     PostDetailsResponseDto getPostById(UUID postId, Pageable pageable);
+
     void removePost(UUID postId);
+
     UUID createPost(PostRequestDto postRequestDto);
+
     PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto);
+
+    List<PostResponseDto> getAllPosts(int page, int size);
 }
