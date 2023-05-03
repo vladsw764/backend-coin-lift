@@ -13,6 +13,8 @@ import com.coinlift.backend.repositories.CommentRepository;
 import com.coinlift.backend.repositories.PostRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +23,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
+
     private Post getPost(UUID postId) {
         return postRepository
                 .findById(postId)
@@ -68,5 +71,12 @@ public class PostServiceImpl implements PostService{
         Post post = postMapper.toPostEntity(postRequestDto);
         postRepository.save(post);
         return postMapper.toPostResponseDto(post);
+    }
+
+    @Override
+    public List<PostResponseDto> getAllPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findAll(pageable);
+        return postPage.getContent().stream().map(postMapper::toPostResponseDto).toList();
     }
 }
