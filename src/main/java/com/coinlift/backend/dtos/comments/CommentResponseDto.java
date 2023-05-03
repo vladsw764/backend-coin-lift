@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Builder
 public record CommentResponseDto(
-        UUID uuid,
+        UUID id,
         String content,
         LocalDateTime createdAt
 ) {
