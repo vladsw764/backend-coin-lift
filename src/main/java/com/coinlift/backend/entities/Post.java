@@ -18,9 +18,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
-    private static final String SEQ_NAME = "post_seq";
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "UUID")
     private UUID id;
     @Column(nullable = false)
