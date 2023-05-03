@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommentMapper {
-    public static CommentResponseDto toCommentResponseDto(Comment comment) {
+    public CommentResponseDto toCommentResponseDto(Comment comment) {
         return CommentResponseDto.builder()
-                .uuid(comment.getUuid())
+                .id(comment.getId())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
 
-    public static Comment toCommentEntity(CommentRequestDto commentRequestDto, Post post) {
+    public Comment toCommentEntity(CommentRequestDto commentRequestDto, Post post) {
         return Comment.builder()
                 .content(commentRequestDto.content())
                 .post(post)
