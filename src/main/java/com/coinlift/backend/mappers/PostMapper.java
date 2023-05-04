@@ -16,6 +16,7 @@ public class PostMapper {
 
     public PostDetailsResponseDto toPostDetailsResponseDto(Post post, List<CommentResponseDto> commentResponseDtos) {
         return PostDetailsResponseDto.builder()
+                .uuid(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .imageLink(post.getImageLink())
@@ -26,6 +27,7 @@ public class PostMapper {
 
     public PostResponseDto toPostResponseDto(Post post) {
         return PostResponseDto.builder()
+                .uuid(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .imageLink(post.getImageLink())
