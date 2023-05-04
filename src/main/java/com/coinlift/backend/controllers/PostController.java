@@ -50,7 +50,7 @@ public class PostController {
         return ResponseEntity.ok("Entity deleted");
     }
 
-    @PutMapping("/{uuid}")
+    @PatchMapping("/{uuid}")
     public ResponseEntity<PostResponseDto> updatePostById(@PathVariable(name = "uuid") UUID uuid,
                                                           @RequestBody PostRequestDto postRequestDto) {
         return new ResponseEntity<>(postService.updatePost(uuid, postRequestDto), HttpStatus.OK);
