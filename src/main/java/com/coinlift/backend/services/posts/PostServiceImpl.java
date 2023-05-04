@@ -57,18 +57,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UUID createPost(PostRequestDto postRequestDto) {
-        Post post = Post.builder()
-                .title(postRequestDto.title())
-                .content(postRequestDto.content())
-                .imageLink(postRequestDto.imageLink())
-                .build();
-        Post savedPost = postRepository.save(post);
+        Post savedPost = postRepository.save(postMapper.toPostEntity(postRequestDto));
         return savedPost.getId();
     }
 
     @Override
     public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
-        Post post = postMapper.toPostEntity(postRequestDto);
+        Post post = getPost(postId);
+        post.setTitle(postRequestDto.title());
+        post.setContent(postRequestDto.content());
+        post.setImageLink(postRequestDto.imageLink());
         postRepository.save(post);
         return postMapper.toPostResponseDto(post);
     }
