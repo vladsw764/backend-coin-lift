@@ -47,7 +47,7 @@ public class PostController {
     @DeleteMapping("/{uuid}")
     public ResponseEntity<String> removePostById(@PathVariable(name = "uuid") UUID uuid) {
         postService.removePost(uuid);
-        return ResponseEntity.ok("Entity deleted");
+        return ResponseEntity.ok("Post successfully removed!");
     }
 
     @PatchMapping("/{uuid}")
