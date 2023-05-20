@@ -5,18 +5,23 @@ import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.services.posts.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
+@CrossOrigin("*")
 public class PostController {
     private final PostService postService;
 
@@ -31,10 +36,14 @@ public class PostController {
         return new ResponseEntity<>(postService.getLatestPosts(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<UUID> createPost(@RequestBody PostRequestDto postRequestDto) {
-        return new ResponseEntity<>(postService.createPost(postRequestDto), HttpStatus.CREATED);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UUID> createPost(@RequestParam String title,
+                                           @RequestParam String content,
+                                           @RequestParam(value = "file") MultipartFile postImage) {
+        PostRequestDto postRequestDto = new PostRequestDto(title, content);
+        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage), HttpStatus.CREATED);
     }
+
 
     @GetMapping({"{uuid}"})
     public ResponseEntity<PostDetailsResponseDto> getPost(@PathVariable(name = "uuid") UUID uuid,
