@@ -8,3 +8,17 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request_size: 10MB
+  codec:
+    max-in-memory-size: 10MB
+
+# AWS data
+aws:
+  region: eu-west-2
+  s3:
+    buckets:
+      customer: coinlift-test
