@@ -34,7 +34,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.isNotBlocked();
+        return true;
     }
 
     @Override
