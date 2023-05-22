@@ -16,7 +16,7 @@ public interface PostService {
 
     void removePost(UUID postId);
 
-    UUID createPost(PostRequestDto postRequestDto, MultipartFile file);
+    UUID createPost(PostRequestDto postRequestDto, MultipartFile file, UUID userId);
 
     PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto);
 
