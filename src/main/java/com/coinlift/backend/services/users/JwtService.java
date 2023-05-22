@@ -13,6 +13,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -35,6 +36,7 @@ public class JwtService {
 
     public String generateToken(Map<String, Object> extractClaims, MyUserDetails userDetails) {
         long jwtExpiration = 1_440_000L;
+        extractClaims.put("userId", userDetails.user().getId());
         return Jwts.builder()
                 .setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
@@ -55,6 +57,19 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public UUID extractUserIdFromToken(String token) {
+        String userIdString = extractAllClaims(trimTokenOfBearerText(token)).get("userId", String.class);
+        if (userIdString != null && !userIdString.isEmpty()) {
+            return UUID.fromString(userIdString);
+        } else {
+            throw new IllegalArgumentException("Invalid or missing userId claim in the JWT token");
+        }
+    }
+
+    private String trimTokenOfBearerText(String token) {
+        return token.substring(7);
     }
 
     private Claims extractAllClaims(String token) {
