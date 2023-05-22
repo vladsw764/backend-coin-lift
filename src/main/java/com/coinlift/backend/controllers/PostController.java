@@ -4,6 +4,7 @@ import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.services.posts.PostService;
+import com.coinlift.backend.services.users.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @CrossOrigin("*")
 public class PostController {
     private final PostService postService;
+    private final JwtService jwtService;
 
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> getAllPosts(@RequestParam(defaultValue = "0") int page,
@@ -39,9 +41,11 @@ public class PostController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UUID> createPost(@RequestParam String title,
                                            @RequestParam String content,
-                                           @RequestParam(value = "file") MultipartFile postImage) {
+                                           @RequestParam(value = "file") MultipartFile postImage,
+                                           @RequestHeader("Authorization") String jwt) {
         PostRequestDto postRequestDto = new PostRequestDto(title, content);
-        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage), HttpStatus.CREATED);
+        UUID userId = jwtService.extractUserIdFromToken(jwt);
+        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage, userId), HttpStatus.CREATED);
     }
 
 
