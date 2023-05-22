@@ -4,15 +4,20 @@ spring:
     import: secrets.yml
   datasource:
     url: jdbc:postgresql://coin-lift-db.cwisjiyig4ci.eu-north-1.rds.amazonaws.com:5432/coinlift_db
+
+# JPA, Hibernate configuration
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: true
 
+# Maximum file size for multipart requests
   servlet:
     multipart:
       max-file-size: 10MB
       max-request_size: 10MB
+
+# Maximum size for in-memory data encoding/decoding
   codec:
     max-in-memory-size: 10MB
 
