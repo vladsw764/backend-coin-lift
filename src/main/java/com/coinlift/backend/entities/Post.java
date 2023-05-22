@@ -34,4 +34,7 @@ public class Post {
     private LocalDateTime updatedAt;
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USERS_POSTS"))
+    private User user;
 }
