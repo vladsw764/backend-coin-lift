@@ -15,7 +15,6 @@ import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.config.s3.S3Buckets;
 import com.coinlift.backend.repositories.UserRepository;
 import com.coinlift.backend.services.s3.S3Service;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -120,14 +119,5 @@ public class PostServiceImpl implements PostService {
         return s3Service.getObject(s3Buckets.getCustomer(),
                 "post-image/%s".formatted(post.getImageLink())
         );
-    }
-
-    @Override
-    public String extractJwtToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7);
-        }
-        throw new IllegalArgumentException("Invalid JWT token");
     }
 }
