@@ -13,7 +13,9 @@ import com.coinlift.backend.repositories.CommentRepository;
 import com.coinlift.backend.repositories.PostRepository;
 
 import com.coinlift.backend.config.s3.S3Buckets;
+import com.coinlift.backend.repositories.UserRepository;
 import com.coinlift.backend.services.s3.S3Service;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,7 @@ public class PostServiceImpl implements PostService {
     private final CommentRepository commentRepository;
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
+    private final UserRepository userRepository;
 
     private Post getPost(UUID postId) {
         return postRepository
@@ -69,7 +72,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file) {
+    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, UUID userId) {
         String postImageId = UUID.randomUUID().toString();
         try {
             s3Service.putObject(
@@ -81,6 +84,7 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException(e);
         }
         Post post = postMapper.toPostEntity(postRequestDto);
+        post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
         post.setImageLink(postImageId);
         return postRepository.save(post).getId();
     }
@@ -116,5 +120,14 @@ public class PostServiceImpl implements PostService {
         return s3Service.getObject(s3Buckets.getCustomer(),
                 "post-image/%s".formatted(post.getImageLink())
         );
+    }
+
+    @Override
+    public String extractJwtToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        throw new IllegalArgumentException("Invalid JWT token");
     }
 }
