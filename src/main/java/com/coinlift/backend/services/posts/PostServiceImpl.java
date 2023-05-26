@@ -6,6 +6,7 @@ import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.entities.Comment;
 import com.coinlift.backend.entities.Post;
+import com.coinlift.backend.exceptions.DeniedAccessException;
 import com.coinlift.backend.exceptions.ResourceNotFoundException;
 import com.coinlift.backend.mappers.CommentMapper;
 import com.coinlift.backend.mappers.PostMapper;
@@ -51,24 +52,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDetailsResponseDto getPostById(UUID postId, Pageable pageable) {
+    public PostDetailsResponseDto getPostById(UUID postId, UUID userId, Pageable pageable) {
         Post post = getPost(postId);
         List<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
         List<CommentResponseDto> commentResponseDtos = comments.stream().map(commentMapper::toCommentResponseDto).toList();
         PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtos);
         postDto.setImage(getPostImage(postId));
+        postDto.setCreator(isCreator(userId, post));
         return postDto;
     }
 
-
     @Override
-    public void removePost(UUID postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new ResourceNotFoundException("post with id [%s] not found".formatted(postId));
+    public void removePost(UUID postId, UUID userId) {
+        if (isCreator(userId, getPost(postId))) {
+            postRepository.deleteById(postId);
+        } else {
+            throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
         }
-        postRepository.deleteById(postId);
     }
-
 
     @Override
     public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, UUID userId) {
@@ -89,12 +90,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
+    public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto, UUID userId) {
         Post post = getPost(postId);
+
+        if (!isCreator(userId, post)) {
+            throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
+        }
+
         post.setTitle(postRequestDto.title());
         post.setContent(postRequestDto.content());
         postRepository.save(post);
-        return postMapper.toPostResponseDto(post);
+
+        PostResponseDto postResponseDto = postMapper.toPostResponseDto(post);
+        postResponseDto.setImage(getPostImage(postId));
+
+        return postResponseDto;
     }
 
     @Override
@@ -119,5 +129,9 @@ public class PostServiceImpl implements PostService {
         return s3Service.getObject(s3Buckets.getCustomer(),
                 "post-image/%s".formatted(post.getImageLink())
         );
+    }
+
+    private static boolean isCreator(UUID userId, Post post) {
+        return userId.equals(post.getUser().getId());
     }
 }
