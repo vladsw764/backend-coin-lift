@@ -1,14 +1,19 @@
 package com.coinlift.backend.dtos.comments;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
-public record CommentResponseDto(
-        UUID id,
-        String content,
-        LocalDateTime createdAt
-) {
+@Getter
+@Setter
+@AllArgsConstructor
+public class CommentResponseDto{
+        private UUID id;
+        private String content;
+        private LocalDateTime createdAt;
+        private UUID userId;
+        private boolean isCommentCreator;
 }
