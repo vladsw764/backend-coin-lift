@@ -14,9 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PostDetailsResponseDto {
     private UUID uuid;
+    private String username;
     private String title;
     private String content;
     private byte[] image;
     private LocalDateTime createdAt;
     private List<CommentResponseDto> comments;
+    private boolean isCreator;
 }
