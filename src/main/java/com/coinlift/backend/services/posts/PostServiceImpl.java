@@ -55,8 +55,9 @@ public class PostServiceImpl implements PostService {
     public PostDetailsResponseDto getPostById(UUID postId, UUID userId, Pageable pageable) {
         Post post = getPost(postId);
         List<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
-        List<CommentResponseDto> commentResponseDtos = comments.stream().map(commentMapper::toCommentResponseDto).toList();
-        PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtos);
+        List<CommentResponseDto> commentResponseDtoList = comments.stream().map(commentMapper::toCommentResponseDto).toList();
+        commentResponseDtoList.forEach(comment -> comment.setCommentCreator(userId.equals(comment.getUserId())));
+        PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtoList);
         postDto.setImage(getPostImage(postId));
         postDto.setCreator(isCreator(userId, post));
         return postDto;
