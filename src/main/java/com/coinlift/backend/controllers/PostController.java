@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -37,10 +38,15 @@ public class PostController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UUID> createPost(@RequestParam String title,
+    public ResponseEntity<?> createPost(@RequestParam String title,
                                            @RequestParam String content,
                                            @RequestParam(value = "file") MultipartFile postImage,
                                            @RequestHeader("Authorization") String jwt) {
+
+        // Check if the uploaded file is an image
+        if (!Objects.requireNonNull(postImage.getContentType()).startsWith("image/")) {
+            return new ResponseEntity<>("Only image files are allowed!", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        }
         PostRequestDto postRequestDto = new PostRequestDto(title, content);
         UUID userId = jwtService.extractUserIdFromToken(jwt);
         return new ResponseEntity<>(postService.createPost(postRequestDto, postImage, userId), HttpStatus.CREATED);
