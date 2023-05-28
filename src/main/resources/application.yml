@@ -1,7 +1,7 @@
 # Datasource configuration
 spring:
   config:
-    import: secrets.yml
+    import: optional:secrets.yml
   datasource:
     url: jdbc:postgresql://coin-lift-db.cwisjiyig4ci.eu-north-1.rds.amazonaws.com:5432/coinlift_db
 
