@@ -1,0 +1,20 @@
+#Datasource config
+spring:
+  datasource:
+    username: ${PROD_DB_USERNAME}
+    password: ${PROD_DB_PASSWORD}
+
+# API for rapidapi.com
+rapid:
+  coindesk:
+    api:
+      key: ${PROD_DESK_API}
+
+# API for coinmarketcap.com
+coinmarketcap:
+  api:
+    key: ${PROD_CAP_API}
+
+# JWT secret key
+jwt:
+  secret: ${PROD_SECRET_KEY}
