@@ -5,7 +5,7 @@
 ## Getting Started
 
 1. Clone the repository to your local machine.
-2. Open the `application.yaml` file located in `src/main/resources` and update the datasource configuration with your own database details:
+2. Open the `application.yml` file located in `src/main/resources` and update the datasource configuration with your own database details:
 ```yaml
 spring:
   datasource:
@@ -13,8 +13,21 @@ spring:
     username: <DATABASE_USERNAME>
     password: <DATABASE_PASSWORD>
 ```
-3. Obtain the API keys from CoinMarketCap and Coindesk **_(instructions below)_**.
-4. Add the API keys to the Spring Boot project by updating the application.yaml file:
+3. Add JWT secret key in the application.yml file:
+```yaml
+jwt:
+  secret: <YOUR_OWN_SECRET_KEY>
+```
+4. Set up AWS S3 buckets by creating a ~/aws directory in your terminal (**[INSTRUCTION](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/credentials-temporary.html)**) and configuring the following settings in the application.yml file:
+```yaml
+aws:
+  region: <AWS_REGION>
+  s3:
+    buckets:
+      customer: <BUCKET_NAME>
+```
+5. Obtain the API keys from CoinMarketCap and Coindesk **_(instructions below)_**.
+6. Add the API keys to the Spring Boot project by updating the application.yaml file:
 ```yaml
 coinmarketcap:
   api:
@@ -25,9 +38,9 @@ rapid:
     api:
       key: <YOUR_API_KEY>
 ```
-5. Save the application.yaml file and restart the Spring Boot application.
-6. Build the project by running `mvn clean package`.
-7. Run the project by running `java -jar target/backend-0.0.1-SNAPSHOT.jar`.
+7. Save the application.yaml file and restart the Spring Boot application.
+8. Build the project by running `mvn clean package`.
+9. Run the project by running `java -jar target/backend-0.0.1-SNAPSHOT.jar`.
 
 
 ## Instruction for obtaining API Keys from CoinMarketCap and Coindesk
@@ -59,7 +72,7 @@ coinmarketcap:
 
 ### Adding the API Key to a Spring Boot Project
 
-1. Open the `application.yaml` file of this Spring Boot project, located in the `src/main/resources` directory.
+1. Open the `application.yml` file of this Spring Boot project, located in the `src/main/resources` directory.
 2. Add the following lines to the file, replacing `<YOUR_API_KEY>` with the API key you obtained from Coindesk:
 
 ```yaml
@@ -68,4 +81,6 @@ rapid:
     api:
       key: <YOUR_API_KEY>
 ```
+
+ **Please make sure to replace** `<OWN_SECRET_KEY>`, `<AWS_REGION>`, `<BUCKET_NAME>`, `<YOUR_COINMARKETCAP_API_KEY>`, **and** `<YOUR_COINDESK_API_KEY>` **with the actual values you want to use.**
 

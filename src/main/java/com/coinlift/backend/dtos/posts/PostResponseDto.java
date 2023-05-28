@@ -12,6 +12,7 @@ import java.util.UUID;
 @Setter
 public class PostResponseDto {
     private UUID uuid;
+    private String username;
     private String title;
     private String content;
     private byte[] image;

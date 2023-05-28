@@ -16,11 +16,7 @@ public class CommentMapper {
     private final PostRepository postRepository;
 
     public CommentResponseDto toCommentResponseDto(Comment comment) {
-        return CommentResponseDto.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .build();
+        return new CommentResponseDto(comment.getId(), comment.getContent(), comment.getCreatedAt(), comment.getUser().getId(), false);
     }
 
     public Comment toCommentEntity(CommentRequestDto commentRequestDto, UUID postId) {

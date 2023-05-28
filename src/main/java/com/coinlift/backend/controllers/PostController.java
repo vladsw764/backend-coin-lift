@@ -6,7 +6,6 @@ import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.services.posts.PostService;
 import com.coinlift.backend.services.users.JwtService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
 @CrossOrigin("*")
@@ -52,20 +50,26 @@ public class PostController {
     @GetMapping({"{uuid}"})
     public ResponseEntity<PostDetailsResponseDto> getPost(@PathVariable(name = "uuid") UUID uuid,
                                                           @RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "5") int size) {
+                                                          @RequestParam(defaultValue = "5") int size,
+                                                          @RequestHeader("Authorization") String jwt) {
         Pageable pageable = PageRequest.of(page, size);
-        return new ResponseEntity<>(postService.getPostById(uuid, pageable), HttpStatus.OK);
+        UUID userId = jwtService.extractUserIdFromToken(jwt);
+        return new ResponseEntity<>(postService.getPostById(uuid, userId, pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<String> removePostById(@PathVariable(name = "uuid") UUID uuid) {
-        postService.removePost(uuid);
+    public ResponseEntity<String> removePostById(@PathVariable(name = "uuid") UUID uuid,
+                                                 @RequestHeader("Authorization") String jwt) {
+        UUID userId = jwtService.extractUserIdFromToken(jwt);
+        postService.removePost(uuid, userId);
         return ResponseEntity.ok("Post successfully removed!");
     }
 
     @PatchMapping("/{uuid}")
     public ResponseEntity<PostResponseDto> updatePostById(@PathVariable(name = "uuid") UUID uuid,
-                                                          @RequestBody PostRequestDto postRequestDto) {
-        return new ResponseEntity<>(postService.updatePost(uuid, postRequestDto), HttpStatus.OK);
+                                                          @RequestBody PostRequestDto postRequestDto,
+                                                          @RequestHeader("Authorization") String jwt) {
+        UUID userId = jwtService.extractUserIdFromToken(jwt);
+        return new ResponseEntity<>(postService.updatePost(uuid, postRequestDto, userId), HttpStatus.OK);
     }
 }
