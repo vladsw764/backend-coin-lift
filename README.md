@@ -2,6 +2,12 @@
 ## Requirements:
 - PostgreSQL database for correct migration
 
+## Documentation:
+
+#### 1. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
+
+#### 2. AuthenticationController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKjd)
+
 ## Getting Started
 
 1. Clone the repository to your local machine.
