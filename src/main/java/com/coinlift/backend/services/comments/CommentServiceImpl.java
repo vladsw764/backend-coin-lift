@@ -34,7 +34,9 @@ public class CommentServiceImpl implements CommentService {
             throw new DeniedAccessException("You don't have access, because you're not creator of this comment!");
         }
         comment.setContent(commentRequestDto.content());
-        return commentMapper.toCommentResponseDto(commentRepository.save(comment));
+        CommentResponseDto dto = commentMapper.toCommentResponseDto(commentRepository.save(comment));
+        dto.setCommentCreator(true);
+        return dto;
     }
 
     @Override
