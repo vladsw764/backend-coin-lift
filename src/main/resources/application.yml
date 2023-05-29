@@ -3,7 +3,12 @@ spring:
   config:
     import: optional:secrets.yml
   datasource:
-    url: jdbc:postgresql://coin-lift-db.cwisjiyig4ci.eu-north-1.rds.amazonaws.com:5432/coinlift_db
+    url: jdbc:postgresql://localhost:54321/coinlift_db
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
 
 # JPA, Hibernate configuration
   jpa:
