@@ -28,15 +28,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
-                .anyRequest().authenticated()
+                    .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/cryptocurrency/**").permitAll()
+                    .anyRequest().authenticated()
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                    .authenticationProvider(authenticationProvider())
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
