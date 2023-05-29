@@ -2,23 +2,17 @@
 This project is called CoinLift and involves the development of a backend system for a cryptocurrency application. The team consists of one backend developer, one frontend developer, and two designers.
 ## Documentation:
 
-#### 1. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
-
-#### 2. AuthenticationController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKjd)
-#### 3. CryptocurrencyController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yLFp)
-## Requirements:
-- PostgreSQL database for correct migration
+#### 1. AuthenticationController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKjd)
+#### 2. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
+#### 3. CommentController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yfp6)
+#### 4. CryptocurrencyController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yLFp)
 
 ## Getting Started
 
 1. Clone the repository to your local machine.
-2. Open the `application.yml` file located in `src/main/resources` and update the datasource configuration with your own database details:
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://<DATABASE_HOST>:<DATABASE_PORT>/<DATABASE_NAME>
-    username: <DATABASE_USERNAME>
-    password: <DATABASE_PASSWORD>
+2. Ensure that you have Docker and Docker Compose installed on your system. And run this command in you terminal:
+```shell
+docker-compose up -d
 ```
 3. Add JWT secret key in the application.yml file:
 ```yaml
@@ -47,7 +41,7 @@ rapid:
 ```
 7. Save the application.yaml file and restart the Spring Boot application.
 8. Build the project by running `mvn clean package`.
-9. Run the project by running `java -jar target/backend-0.0.1-SNAPSHOT.jar`.
+9. Run the project by running `java -jar target/backend-1.jar`.
 
 
 ## Instruction for obtaining API Keys from CoinMarketCap and Coindesk
