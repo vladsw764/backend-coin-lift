@@ -1,12 +1,13 @@
-# backend-coin-lift
-## Requirements:
-- PostgreSQL database for correct migration
-
+# Backend for CoinLift. 
+This project is called CoinLift and involves the development of a backend system for a cryptocurrency application. The team consists of one backend developer, one frontend developer, and two designers.
 ## Documentation:
 
 #### 1. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
 
 #### 2. AuthenticationController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKjd)
+#### 3. CryptocurrencyController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yLFp)
+## Requirements:
+- PostgreSQL database for correct migration
 
 ## Getting Started
 
