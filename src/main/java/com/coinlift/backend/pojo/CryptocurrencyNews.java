@@ -11,6 +11,7 @@ import lombok.Setter;
 @Builder
 public class CryptocurrencyNews {
     private String title;
+    private String url;
     private String description;
     private String thumbnail;
     private String createdAt;

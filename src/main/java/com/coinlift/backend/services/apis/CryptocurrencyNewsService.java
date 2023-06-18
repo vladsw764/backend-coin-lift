@@ -30,6 +30,7 @@ public class CryptocurrencyNewsService {
             for (int i = 0; i < count; i++) {
                 JSONObject articleObject = articlesArray.getJSONObject(i);
                 CryptocurrencyNews article = CryptocurrencyNews.builder()
+                        .url(articleObject.getString("url"))
                         .title(articleObject.getString("title"))
                         .description(articleObject.getString("description"))
                         .thumbnail(articleObject.getString("thumbnail"))
@@ -45,7 +46,7 @@ public class CryptocurrencyNewsService {
 
     private HttpResponse<String> getResponse() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://cryptocurrency-news2.p.rapidapi.com/v1/coindesk"))
+                .uri(URI.create("https://cryptocurrency-news2.p.rapidapi.com/v1/cointelegraph"))
                 .header("content-type", "application/octet-stream")
                 .header("X-RapidAPI-Key", apiKey)
                 .header("X-RapidAPI-Host", API_HOST)
