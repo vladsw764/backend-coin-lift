@@ -9,6 +9,7 @@ import lombok.*;
 public class CryptoData {
     private String imageUrl;
     private String name;
+    private String symbol;
     private double price;
     private double percentChange1H;
     private double percentChange1D;

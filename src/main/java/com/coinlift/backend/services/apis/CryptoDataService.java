@@ -34,6 +34,7 @@ public class CryptoDataService {
             JSONObject cryptocurrency = data.getJSONObject(i);
 
             String name = cryptocurrency.getString("name");
+            String symbol = cryptocurrency.getString("symbol");
             Integer id = cryptocurrency.getInt("id");
             double price = cryptocurrency.getJSONObject("quote").getJSONObject("USD").getDouble("price");
             double percentChange1H = cryptocurrency.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_1h");
@@ -48,6 +49,7 @@ public class CryptoDataService {
             CryptoData cryptoData = CryptoData.builder()
                     .name(name)
                     .imageUrl(imgUrl)
+                    .symbol(symbol)
                     .price(price)
                     .percentChange1H(percentChange1H)
                     .percentChange1D(percentChange1D)
