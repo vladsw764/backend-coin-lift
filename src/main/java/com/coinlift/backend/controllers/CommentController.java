@@ -14,6 +14,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts/{postId}")
+@CrossOrigin("*")
 public class CommentController {
 
     private final CommentService commentService;

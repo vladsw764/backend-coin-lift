@@ -9,6 +9,7 @@ import com.coinlift.backend.services.apis.CryptoDataService;
 import com.coinlift.backend.services.apis.CryptocurrencyNewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cryptocurrency")
+@CrossOrigin("*")
 public class CryptocurrencyController {
     private final CryptoDataService dataService;
     private final CryptocurrencyNewsService newsService;
