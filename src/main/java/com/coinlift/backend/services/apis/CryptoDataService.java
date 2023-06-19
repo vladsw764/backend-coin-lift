@@ -1,7 +1,10 @@
 package com.coinlift.backend.services.apis;
 
+import com.coinlift.backend.entities.CryptoImage;
 import com.coinlift.backend.pojo.CryptoData;
 import com.coinlift.backend.pojo.CryptoPercentData;
+import com.coinlift.backend.repositories.CryptoImageRepository;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +19,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service@RequiredArgsConstructor
 public class CryptoDataService {
     @Value("${coinmarketcap.api.key}")
     private String apiKey;
 
+    private final CryptoImageRepository cryptoImageRepository;
     private final String url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
 
     public List<CryptoData> getAllCryptoData() {
@@ -116,11 +120,25 @@ public class CryptoDataService {
     }
 
     private String getImageUrl(Integer id) {
-        String infoUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/info";
-        String infoParams = "id=" + id;
-        String infoResponse = getApiResponse(infoUrl, infoParams);
-        JSONObject infoJson = new JSONObject(infoResponse);
-        JSONObject coinInfo = infoJson.getJSONObject("data").getJSONObject(String.valueOf(id));
-        return coinInfo.getString("logo");
+        // Check if the image URL exists in the database
+        CryptoImage cryptoImage = cryptoImageRepository.findByCryptoId(id);
+        if (cryptoImage != null) {
+            return cryptoImage.getCryptoImageUrl();
+        } else {
+            String infoUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/info";
+            String infoParams = "id=" + id;
+            String infoResponse = getApiResponse(infoUrl, infoParams);
+            JSONObject infoJson = new JSONObject(infoResponse);
+            JSONObject coinInfo = infoJson.getJSONObject("data").getJSONObject(String.valueOf(id));
+            String imageUrl = coinInfo.getString("logo");
+
+            // Save the image URL to the database
+            cryptoImage = new CryptoImage();
+            cryptoImage.setCryptoId(id);
+            cryptoImage.setCryptoImageUrl(imageUrl);
+            cryptoImageRepository.save(cryptoImage);
+
+            return imageUrl;
+        }
     }
 }
