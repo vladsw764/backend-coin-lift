@@ -18,7 +18,7 @@ public class PostMapper {
     }
 
     public PostResponseDto toPostResponseDto(Post post) {
-        return new PostResponseDto(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getContent(), null, post.getCreatedAt());
+        return new PostResponseDto(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getContent(), null, post.getComments().size(), post.getCreatedAt());
     }
 
     public Post toPostEntity(PostRequestDto postRequestDto) {
