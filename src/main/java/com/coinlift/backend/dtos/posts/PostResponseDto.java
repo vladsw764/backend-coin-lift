@@ -16,5 +16,6 @@ public class PostResponseDto {
     private String title;
     private String content;
     private byte[] image;
+    private Integer commentCount;
     private LocalDateTime createdAt;
 }
