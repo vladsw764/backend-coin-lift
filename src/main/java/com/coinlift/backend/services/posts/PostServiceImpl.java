@@ -66,6 +66,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void removePost(UUID postId, UUID userId) {
         if (isCreator(userId, getPost(postId))) {
+            removePostImage(postId);
             postRepository.deleteById(postId);
         } else {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
@@ -128,6 +129,18 @@ public class PostServiceImpl implements PostService {
         }
 
         return s3Service.getObject(s3Buckets.getCustomer(),
+                "post-image/%s".formatted(post.getImageLink())
+        );
+    }
+
+    public void removePostImage(UUID postId) {
+        Post post = getPost(postId);
+
+        if (post.getImageLink().isBlank()) {
+            throw new ResourceNotFoundException("post with id [%s] post image  not found".formatted(postId));
+        }
+
+        s3Service.deleteObject(s3Buckets.getCustomer(),
                 "post-image/%s".formatted(post.getImageLink())
         );
     }
