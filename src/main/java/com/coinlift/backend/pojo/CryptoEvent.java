@@ -13,7 +13,7 @@ import lombok.Setter;
 public class CryptoEvent {
     private String cryptoName;
     private String date;
-    private String name;
+    private String imageLink;
     @JsonProperty("is_conference")
     private boolean isConference;
 }
