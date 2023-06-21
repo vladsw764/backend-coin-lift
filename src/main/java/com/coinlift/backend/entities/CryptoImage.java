@@ -19,4 +19,5 @@ public class CryptoImage {
     private Long id;
     private Integer cryptoId;
     private String cryptoImageUrl;
+    private String cryptoName;
 }
