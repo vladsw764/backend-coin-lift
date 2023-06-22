@@ -29,13 +29,16 @@ public class CryptoEventsService {
         for (String crypto : topCryptos) {
             String apiUrl = API_BASE_URL + crypto + API_EVENT_ENDPOINT;
             CryptoEvent[] cryptoEvents = restTemplate.getForObject(apiUrl, CryptoEvent[].class);
+
             for (CryptoEvent event : cryptoEvents != null ? cryptoEvents : new CryptoEvent[0]) {
                 String result = crypto.substring(crypto.indexOf('-') + 1);
+
                 LocalDateTime eventDate = LocalDateTime.parse(event.getDate(), DateTimeFormatter.ISO_DATE_TIME);
                 if (eventDate.isAfter(LocalDateTime.now().minusDays(1))) {
                     ZonedDateTime zonedEventDate = ZonedDateTime.parse(event.getDate()).withZoneSameInstant(ZoneId.systemDefault());
                     event.setDate(zonedEventDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                     event.setCryptoName(result.toUpperCase());
+
                     // Get the CryptoImage object from the repository based on cryptoId
                     CryptoImage cryptoImage = cryptoImageRepository.findCryptoImageByCryptoName(crypto);
                     if (cryptoImage != null) {
@@ -43,6 +46,7 @@ public class CryptoEventsService {
                     } else {
                         event.setImageLink(""); // Set a default image link or handle the case when no image is found
                     }
+
                     events.add(event);
                 }
             }
