@@ -66,7 +66,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public void removePost(UUID postId, UUID userId) {
         if (isCreator(userId, getPost(postId))) {
-            removePostImage(postId);
+            if (getPost(postId).getImageLink() != null) {
+                removePostImage(postId);
+            }
             postRepository.deleteById(postId);
         } else {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
@@ -75,19 +77,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, UUID userId) {
-        String postImageId = UUID.randomUUID().toString();
-        try {
-            s3Service.putObject(
-                    s3Buckets.getCustomer(),
-                    "post-image/%s".formatted(postImageId),
-                    file.getBytes()
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         Post post = postMapper.toPostEntity(postRequestDto);
         post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
-        post.setImageLink(postImageId);
+        if (file != null && !file.isEmpty()) {
+            String postImageId = UUID.randomUUID().toString();
+            try {
+                s3Service.putObject(
+                        s3Buckets.getCustomer(),
+                        "post-image/%s".formatted(postImageId),
+                        file.getBytes()
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            post.setImageLink(postImageId);
+        }
         return postRepository.save(post).getId();
     }
 
@@ -123,6 +127,10 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository
                 .findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("post with id [%s] not found".formatted(postId)));
+
+        if (post.getImageLink() == null) {
+            return null;
+        }
 
         if (post.getImageLink().isBlank()) {
             throw new ResourceNotFoundException("post with id [%s] post image  not found".formatted(postId));

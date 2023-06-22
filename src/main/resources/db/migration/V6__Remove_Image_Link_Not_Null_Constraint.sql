@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS posts
+    ALTER COLUMN image_link DROP NOT NULL;

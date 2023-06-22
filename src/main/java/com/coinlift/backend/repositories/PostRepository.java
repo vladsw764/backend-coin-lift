@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostRepository extends JpaRepository<Post, UUID> {
-    @Query(value = "SELECT * FROM posts ORDER BY posts.created_at DESC LIMIT 6", nativeQuery = true)
+    @Query("select p from Post p where p.imageLink is not null order by p.createdAt desc limit 6")
     List<Post> findLatestPosts();
 
 }
