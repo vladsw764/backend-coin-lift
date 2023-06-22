@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface PostService {
     List<PostResponseDto> getLatestPosts();
 
-    PostDetailsResponseDto getPostById(UUID postId, UUID userId, Pageable pageable);
+    PostDetailsResponseDto getPostById(UUID postId, String jwt, Pageable pageable);
 
     void removePost(UUID postId, UUID userId);
 
