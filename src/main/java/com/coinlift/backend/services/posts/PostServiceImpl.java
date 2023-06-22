@@ -75,19 +75,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, UUID userId) {
-        String postImageId = UUID.randomUUID().toString();
-        try {
-            s3Service.putObject(
-                    s3Buckets.getCustomer(),
-                    "post-image/%s".formatted(postImageId),
-                    file.getBytes()
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         Post post = postMapper.toPostEntity(postRequestDto);
         post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
-        post.setImageLink(postImageId);
+        if (file != null && !file.isEmpty()) {
+            String postImageId = UUID.randomUUID().toString();
+            try {
+                s3Service.putObject(
+                        s3Buckets.getCustomer(),
+                        "post-image/%s".formatted(postImageId),
+                        file.getBytes()
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            post.setImageLink(postImageId);
+        }
         return postRepository.save(post).getId();
     }
 

@@ -39,13 +39,15 @@ public class PostController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createPost(@RequestParam String title,
-                                           @RequestParam String content,
-                                           @RequestParam(value = "file") MultipartFile postImage,
-                                           @RequestHeader("Authorization") String jwt) {
+                                        @RequestParam String content,
+                                        @RequestParam(value = "file", required = false) MultipartFile postImage,
+                                        @RequestHeader("Authorization") String jwt) {
 
         // Check if the uploaded file is an image
-        if (!Objects.requireNonNull(postImage.getContentType()).startsWith("image/")) {
-            return new ResponseEntity<>("Only image files are allowed!", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        if (postImage != null && !postImage.isEmpty()) {
+            if (!Objects.requireNonNull(postImage.getContentType()).startsWith("image/")) {
+                return new ResponseEntity<>("Only image files are allowed!", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+            }
         }
         PostRequestDto postRequestDto = new PostRequestDto(title, content);
         UUID userId = jwtService.extractUserIdFromToken(jwt);
