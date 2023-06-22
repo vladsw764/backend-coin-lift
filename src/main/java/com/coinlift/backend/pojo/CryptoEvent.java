@@ -14,6 +14,7 @@ public class CryptoEvent {
     private String cryptoName;
     private String date;
     private String imageLink;
+    private String link;
     @JsonProperty("is_conference")
     private boolean isConference;
 }
