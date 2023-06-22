@@ -59,10 +59,9 @@ public class PostController {
     public ResponseEntity<PostDetailsResponseDto> getPost(@PathVariable(name = "uuid") UUID uuid,
                                                           @RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "5") int size,
-                                                          @RequestHeader("Authorization") String jwt) {
+                                                          @RequestHeader(value = "Authorization", required = false) String jwt) {
         Pageable pageable = PageRequest.of(page, size);
-        UUID userId = jwtService.extractUserIdFromToken(jwt);
-        return new ResponseEntity<>(postService.getPostById(uuid, userId, pageable), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPostById(uuid, jwt, pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/{uuid}")
