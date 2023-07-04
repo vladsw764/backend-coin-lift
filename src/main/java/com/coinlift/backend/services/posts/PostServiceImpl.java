@@ -6,6 +6,7 @@ import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.entities.Comment;
+import com.coinlift.backend.entities.MyUserDetails;
 import com.coinlift.backend.entities.Post;
 import com.coinlift.backend.exceptions.DeniedAccessException;
 import com.coinlift.backend.exceptions.ResourceNotFoundException;
@@ -15,11 +16,13 @@ import com.coinlift.backend.repositories.CommentRepository;
 import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.repositories.UserRepository;
 import com.coinlift.backend.services.s3.S3Service;
-import com.coinlift.backend.services.users.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +39,6 @@ public class PostServiceImpl implements PostService {
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
     private final S3Service s3Service;
-    private final JwtService jwtService;
     private final S3Buckets s3Buckets;
     private final UserRepository userRepository;
 
@@ -53,8 +55,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDetailsResponseDto getPostById(UUID postId, String jwt, Pageable pageable) {
-        UUID userId = (jwt != null) ? jwtService.extractUserIdFromToken(jwt) : null;
+    public PostDetailsResponseDto getPostById(UUID postId, Pageable pageable) {
+        UUID userId;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
+            MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+            userId = userDetails.user().getId();
+        } else userId = null;
 
         Post post = getPost(postId);
         List<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
@@ -71,7 +78,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void removePost(UUID postId, UUID userId) {
+    public void removePost(UUID postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        UUID userId = userDetails.user().getId();
+
         if (isCreator(userId, getPost(postId))) {
             if (getPost(postId).getImageLink() != null) {
                 removePostImage(postId);
@@ -83,7 +94,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, UUID userId) {
+    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        UUID userId = userDetails.user().getId();
+
         Post post = postMapper.toPostEntity(postRequestDto);
         post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
         if (file != null && !file.isEmpty()) {
@@ -103,8 +118,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto, UUID userId) {
+    public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
         Post post = getPost(postId);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        UUID userId = userDetails.user().getId();
 
         if (!isCreator(userId, post)) {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
