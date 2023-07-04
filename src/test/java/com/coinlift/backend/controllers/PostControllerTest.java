@@ -27,11 +27,9 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -129,6 +127,16 @@ class PostControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", is(postId.toString())))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("DELETE api/v1/posts/{postId}")
+    void removePostById() throws Exception {
+        this.mockMvc.perform(delete("/api/v1/posts/{uuid}", UUID.randomUUID()))
+                .andExpect(content().string("Post successfully removed!"))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }
