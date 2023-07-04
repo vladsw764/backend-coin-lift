@@ -1,5 +1,6 @@
 package com.coinlift.backend.controllers;
 
+import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.services.posts.PostService;
@@ -10,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -58,6 +62,49 @@ class PostControllerTest {
         mockMvc.perform(get("/api/v1/posts/latest"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(postResponseDtoList.size()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("GET api/v1/posts")
+    void getAllPosts_returnsListOfPosts() throws Exception {
+        int page = 0;
+        int size = 20;
+        when(postService.getAllPosts(page, size)).thenReturn(postResponseDtoList);
+        mockMvc.perform(get("/api/v1/posts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(postResponseDtoList.size()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("GET api/v1/posts/{postId}")
+    void getPostById_returnsPost() throws Exception {
+        // Create a UUID for the post
+        UUID uuid = UUID.randomUUID();
+
+        // Create a pageable object
+        int page = 0;
+        int size = 20;
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Create a mock PostDetailsResponseDto object with the expected values
+        PostDetailsResponseDto responseDto = new PostDetailsResponseDto(
+                uuid, "username", "title", "content",
+                new byte[0], LocalDateTime.now(), new ArrayList<>(), true
+        );
+
+        // Mock the postService.getPostById() method to return the expected response
+        when(postService.getPostById(uuid, pageable)).thenReturn(responseDto);
+
+        // Perform the mockMvc request
+        mockMvc.perform(get("/api/v1/posts/{uuid}", uuid)
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.uuid").value(uuid.toString()))
+                .andExpect(jsonPath("$.username").value("username"))
+                .andExpect(jsonPath("$.title").value("title"))
                 .andDo(print());
     }
 
