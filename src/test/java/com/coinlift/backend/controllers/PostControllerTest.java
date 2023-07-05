@@ -4,6 +4,8 @@ import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.services.posts.PostService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +29,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -134,9 +138,42 @@ class PostControllerTest {
     @WithMockUser
     @DisplayName("DELETE api/v1/posts/{postId}")
     void removePostById() throws Exception {
-        this.mockMvc.perform(delete("/api/v1/posts/{uuid}", UUID.randomUUID()))
+        mockMvc.perform(delete("/api/v1/posts/{uuid}", UUID.randomUUID()))
                 .andExpect(content().string("Post successfully removed!"))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("PATCH api/v1/posts/{postId}")
+    void updatePostById_returnsUpdatedPost() throws Exception {
+        UUID postId = UUID.randomUUID();
+
+        PostRequestDto postRequestDto = new PostRequestDto("test title", "test content");
+        PostResponseDto postResponseDto = new PostResponseDto(postId, "user_1", "test title", "test content", new byte[0], 1, LocalDateTime.now());
+
+
+        when(postService.updatePost(eq(postId), any(PostRequestDto.class))).thenReturn(postResponseDto);
+
+        mockMvc.perform(patch("/api/v1/posts/{postId}", postId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postRequestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.uuid", is(postId.toString())))
+                .andExpect(jsonPath("$.title", is("test title")))
+                .andExpect(jsonPath("$.content", is("test content")))
+                .andExpect(jsonPath("$.username", is("user_1")))
+                .andExpect(jsonPath("$.commentCount", is(1)))
+                .andDo(print());
+    }
+
+    private String asJsonString(Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }
