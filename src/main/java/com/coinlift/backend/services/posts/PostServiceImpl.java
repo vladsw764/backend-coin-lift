@@ -79,9 +79,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void removePost(UUID postId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        UUID userId = userDetails.user().getId();
+        UUID userId = getUserId();
 
         if (isCreator(userId, getPost(postId))) {
             if (getPost(postId).getImageLink() != null) {
@@ -95,9 +93,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public UUID createPost(PostRequestDto postRequestDto, MultipartFile file) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        UUID userId = userDetails.user().getId();
+        UUID userId = getUserId();
 
         Post post = postMapper.toPostEntity(postRequestDto);
         post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
@@ -120,10 +116,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
         Post post = getPost(postId);
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-        UUID userId = userDetails.user().getId();
+        UUID userId = getUserId();
 
         if (!isCreator(userId, post)) {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
@@ -177,6 +170,15 @@ public class PostServiceImpl implements PostService {
         s3Service.deleteObject(s3Buckets.getCustomer(),
                 "post-image/%s".formatted(post.getImageLink())
         );
+    }
+
+    private static UUID getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            throw new DeniedAccessException("You can't do it before authenticate!");
+        }
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        return userDetails.user().getId();
     }
 
     private static boolean isCreator(UUID userId, Post post) {
