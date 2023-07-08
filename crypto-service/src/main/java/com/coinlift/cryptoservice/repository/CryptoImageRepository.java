@@ -1,6 +1,6 @@
-package com.coinlift.backend.repositories;
+package com.coinlift.cryptoservice.repository;
 
-import com.coinlift.backend.entities.CryptoImage;
+import com.coinlift.cryptoservice.model.CryptoImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CryptoImageRepository extends JpaRepository<CryptoImage, Long> {

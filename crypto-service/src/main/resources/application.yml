@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: optional:secrets.yml
+  flyway:
+    table: crypto_service_flyway_history
+
+  # Datasource configuration
+  datasource:
+    url: jdbc:postgresql://localhost:4321/crypto-service
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  # JPA, Hibernate configuration
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: true
+
+server:
+  port: 8081
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone:
+#        http://localhost:8761/eureka

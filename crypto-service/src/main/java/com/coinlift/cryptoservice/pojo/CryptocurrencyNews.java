@@ -1,4 +1,4 @@
-package com.coinlift.backend.pojo;
+package com.coinlift.cryptoservice.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
-package com.coinlift.backend.services.apis;
+package com.coinlift.cryptoservice.service;
 
-import com.coinlift.backend.pojo.CryptocurrencyNews;
+import com.coinlift.cryptoservice.pojo.CryptocurrencyNews;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;

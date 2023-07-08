@@ -1,12 +1,12 @@
-package com.coinlift.backend.controllers;
+package com.coinlift.cryptoservice.controller;
 
-import com.coinlift.backend.pojo.CryptoData;
-import com.coinlift.backend.pojo.CryptoEvent;
-import com.coinlift.backend.pojo.CryptoPercentData;
-import com.coinlift.backend.pojo.CryptocurrencyNews;
-import com.coinlift.backend.services.apis.CryptoEventsService;
-import com.coinlift.backend.services.apis.CryptoDataService;
-import com.coinlift.backend.services.apis.CryptocurrencyNewsService;
+import com.coinlift.cryptoservice.pojo.CryptoData;
+import com.coinlift.cryptoservice.pojo.CryptoEvent;
+import com.coinlift.cryptoservice.pojo.CryptoPercentData;
+import com.coinlift.cryptoservice.pojo.CryptocurrencyNews;
+import com.coinlift.cryptoservice.service.CryptoEventsService;
+import com.coinlift.cryptoservice.service.CryptoDataService;
+import com.coinlift.cryptoservice.service.CryptocurrencyNewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cryptocurrency")
 @CrossOrigin("*")
-public class CryptocurrencyController {
+public class CryptoController {
     private final CryptoDataService dataService;
     private final CryptocurrencyNewsService newsService;
     private final CryptoEventsService eventsService;
@@ -45,3 +45,5 @@ public class CryptocurrencyController {
         return ResponseEntity.ok(eventsService.getLatestCryptoEvents());
     }
 }
+
+

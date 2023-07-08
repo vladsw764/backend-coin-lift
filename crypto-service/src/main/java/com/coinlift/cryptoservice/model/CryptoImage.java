@@ -1,4 +1,4 @@
-package com.coinlift.backend.entities;
+package com.coinlift.cryptoservice.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

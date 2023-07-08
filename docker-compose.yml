@@ -1,11 +1,29 @@
 version: '3.8'
 
-services:
-  db:
-    image: postgres:alpine
-    ports:
-      - "54321:5432"
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: coinlift_db
+#services:
+#  db:
+#    image: postgres:alpine
+#    ports:
+#      - "54321:5432"
+#    environment:
+#      POSTGRES_PASSWORD: password
+#      POSTGRES_DB: coinlift_db
 
+services:
+  ## PostgreSQL Docker Compose Config
+  postgres-crypto:
+    container_name: postgres-crypto
+    image: postgres
+    environment:
+      POSTGRES_DB: crypto-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-crypto:/data/postgres
+    expose:
+      - "4321"
+    ports:
+      - "4321:4321"
+    command: -p 4321
+    restart: always

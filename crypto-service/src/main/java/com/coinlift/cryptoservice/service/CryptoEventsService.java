@@ -1,8 +1,8 @@
-package com.coinlift.backend.services.apis;
+package com.coinlift.cryptoservice.service;
 
-import com.coinlift.backend.entities.CryptoImage;
-import com.coinlift.backend.pojo.CryptoEvent;
-import com.coinlift.backend.repositories.CryptoImageRepository;
+import com.coinlift.cryptoservice.model.CryptoImage;
+import com.coinlift.cryptoservice.pojo.CryptoEvent;
+import com.coinlift.cryptoservice.repository.CryptoImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

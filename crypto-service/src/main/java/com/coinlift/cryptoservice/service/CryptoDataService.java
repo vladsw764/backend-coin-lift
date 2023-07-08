@@ -1,9 +1,9 @@
-package com.coinlift.backend.services.apis;
+package com.coinlift.cryptoservice.service;
 
-import com.coinlift.backend.entities.CryptoImage;
-import com.coinlift.backend.pojo.CryptoData;
-import com.coinlift.backend.pojo.CryptoPercentData;
-import com.coinlift.backend.repositories.CryptoImageRepository;
+import com.coinlift.cryptoservice.model.CryptoImage;
+import com.coinlift.cryptoservice.pojo.CryptoData;
+import com.coinlift.cryptoservice.pojo.CryptoPercentData;
+import com.coinlift.cryptoservice.repository.CryptoImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,7 +17,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service@RequiredArgsConstructor
 public class CryptoDataService {
@@ -135,10 +137,23 @@ public class CryptoDataService {
             // Save the image URL to the database
             cryptoImage = new CryptoImage();
             cryptoImage.setCryptoId(id);
+            cryptoImage.setCryptoName(getCryptoNameById(id));
             cryptoImage.setCryptoImageUrl(imageUrl);
             cryptoImageRepository.save(cryptoImage);
 
             return imageUrl;
         }
+    }
+
+    private String getCryptoNameById(Integer id) {
+        // Map cryptoId to cryptoName
+        Map<Integer, String> cryptoNames = new HashMap<>();
+        cryptoNames.put(1, "btc-bitcoin");
+        cryptoNames.put(1027, "eth-ethereum");
+        cryptoNames.put(1839, "bnb-binance-coin");
+        cryptoNames.put(2010, "ada-cardano");
+        cryptoNames.put(52, "xrp-xrp");
+
+        return cryptoNames.getOrDefault(id, "");
     }
 }
