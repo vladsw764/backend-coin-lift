@@ -16,7 +16,8 @@
 	<description>backend</description>
 	<modules>
 		<module>crypto-service</module>
-    </modules>
+		<module>community-service</module>
+	</modules>
 	<properties>
 		<maven.compiler.source>20</maven.compiler.source>
 		<maven.compiler.target>20</maven.compiler.target>
