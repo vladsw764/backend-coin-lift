@@ -35,3 +35,4 @@ build/
 secrets.yml
 
 /postgres-crypto
+/postgres-community
