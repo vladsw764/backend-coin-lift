@@ -17,6 +17,7 @@
 	<modules>
 		<module>crypto-service</module>
 		<module>community-service</module>
+		<module>file-storage-service</module>
 	</modules>
 	<properties>
 		<maven.compiler.source>20</maven.compiler.source>
