@@ -1,6 +1,7 @@
 spring:
   config:
     import: optional:secrets.yml
+    name: crypto-service
   flyway:
     table: crypto_service_flyway_history
 
