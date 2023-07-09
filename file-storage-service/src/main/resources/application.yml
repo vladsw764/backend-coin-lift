@@ -1,0 +1,8 @@
+spring:
+  config:
+    name: file-storage-service
+aws:
+  region: eu-west-2
+  s3:
+    buckets:
+      customer: coinlift-test
