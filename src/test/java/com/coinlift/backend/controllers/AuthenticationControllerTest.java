@@ -38,7 +38,7 @@ class AuthenticationControllerTest {
 
     @BeforeEach
     void setUp() {
-        registrationRequest = new UserRegistrationRequest("username", "email@example.com", "password");
+        registrationRequest = new UserRegistrationRequest("username", "email@example.com", "password", "password");
         authenticationRequest = new UserAuthenticationRequest("email@example.com", "password");
     }
 
