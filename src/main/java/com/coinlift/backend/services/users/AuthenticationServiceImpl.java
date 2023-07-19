@@ -24,6 +24,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse register(UserRegistrationRequest userRegistrationRequest) {
+        String pass = userRegistrationRequest.password();
+        String confirmPass = userRegistrationRequest.confirmPassword();
+
+        if (!pass.equals(confirmPass)) {
+            throw new IllegalArgumentException("Password and confirm password don't match");
+        }
+
         User user = User.builder()
                 .username(userRegistrationRequest.username())
                 .email(userRegistrationRequest.emailAddress())
