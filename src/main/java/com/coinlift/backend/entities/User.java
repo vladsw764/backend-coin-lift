@@ -30,4 +30,6 @@ public class User {
     List<Comment> comments = new ArrayList<>();
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true)
     List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<AuthenticationToken> tokens;
 }
