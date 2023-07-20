@@ -11,11 +11,16 @@ import java.util.UUID;
 @Getter
 @Setter
 public class PostResponseDto {
+
     private UUID uuid;
+
     private String username;
-    private String title;
+
     private String content;
+
     private byte[] image;
+
     private Integer commentCount;
+
     private LocalDateTime createdAt;
 }
