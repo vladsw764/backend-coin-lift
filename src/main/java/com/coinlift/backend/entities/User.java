@@ -40,4 +40,16 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<AuthenticationToken> tokens;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "from")
+    private List<Follower> followers = new ArrayList<>();
+
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer followers_count;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "to")
+    private List<Follower> following = new ArrayList<>();
+
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer following_count;
 }
