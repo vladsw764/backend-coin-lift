@@ -1,0 +1,21 @@
+spring:
+  flyway:
+    table: user_service_flyway_history
+
+  datasource:
+    url: jdbc:postgresql://localhost:4323/user-service
+    password: password
+    username: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    show-sql: true
+
+  config:
+    import: optional:secrets.yml
+    name: user-service
+
+server:
+  port: 8084

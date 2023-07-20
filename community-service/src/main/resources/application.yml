@@ -1,0 +1,20 @@
+spring:
+#  flyway:
+#    table: community_service_flyway_history
+
+  datasource:
+    url: jdbc:postgresql://localhost:4322/community-service
+    password: password
+    username: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    show-sql: true
+
+  config:
+    name: community-service
+
+server:
+  port: 8082

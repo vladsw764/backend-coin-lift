@@ -1,16 +1,8 @@
 version: '3.8'
 
-#services:
-#  db:
-#    image: postgres:alpine
-#    ports:
-#      - "54321:5432"
-#    environment:
-#      POSTGRES_PASSWORD: password
-#      POSTGRES_DB: coinlift_db
-
 services:
   ## PostgreSQL Docker Compose Config
+  ## Crypto-service DB
   postgres-crypto:
     container_name: postgres-crypto
     image: postgres
@@ -26,4 +18,32 @@ services:
     ports:
       - "4321:4321"
     command: -p 4321
+    restart: always
+  ## Community-service DB
+  postgres-community:
+    container_name: postgres-community
+    image: postgres
+    environment:
+      POSTGRES_DB: community-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-community:/data/postgres
+    ports:
+      - "4322:5432"
+    restart: always
+    ## User-service DB
+  postgres-user:
+    container_name: postgres-user
+    image: postgres
+    environment:
+      POSTGRES_DB: user-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-user:/data/postgres
+    ports:
+      - "4323:5432"
     restart: always

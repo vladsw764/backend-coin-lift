@@ -6,3 +6,5 @@ aws:
   s3:
     buckets:
       customer: coinlift-test
+server:
+  port: 8083
