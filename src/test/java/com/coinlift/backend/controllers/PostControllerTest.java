@@ -50,8 +50,8 @@ class PostControllerTest {
     @BeforeEach
     void setUp() {
         postResponseDtoList = Arrays.asList(
-                new PostResponseDto(UUID.randomUUID(), "user_1", "title_1", "content_1", new byte[0], 2, LocalDateTime.now()),
-                new PostResponseDto(UUID.randomUUID(), "user_2", "title_1", "content_2", new byte[0], 34, LocalDateTime.now())
+                new PostResponseDto(UUID.randomUUID(), "user_1", "content_1", new byte[0], 2, LocalDateTime.now()),
+                new PostResponseDto(UUID.randomUUID(), "user_2", "content_2", new byte[0], 34, LocalDateTime.now())
         );
     }
 
@@ -92,7 +92,7 @@ class PostControllerTest {
 
         // Create a mock PostDetailsResponseDto object with the expected values
         PostDetailsResponseDto responseDto = new PostDetailsResponseDto(
-                uuid, "username", "title", "content",
+                uuid, "username", "content",
                 new byte[0], LocalDateTime.now(), new ArrayList<>(), true
         );
 
@@ -106,7 +106,6 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid").value(uuid.toString()))
                 .andExpect(jsonPath("$.username").value("username"))
-                .andExpect(jsonPath("$.title").value("title"))
                 .andDo(print());
     }
 
@@ -126,7 +125,6 @@ class PostControllerTest {
 
         mockMvc.perform(multipart("/api/v1/posts")
                         .file(multipartFile)
-                        .param("title", "Test Title")
                         .param("content", "Test Content")
                 )
                 .andExpect(status().isCreated())
@@ -150,8 +148,8 @@ class PostControllerTest {
     void updatePostById_returnsUpdatedPost() throws Exception {
         UUID postId = UUID.randomUUID();
 
-        PostRequestDto postRequestDto = new PostRequestDto("test title", "test content");
-        PostResponseDto postResponseDto = new PostResponseDto(postId, "user_1", "test title", "test content", new byte[0], 1, LocalDateTime.now());
+        PostRequestDto postRequestDto = new PostRequestDto("test content");
+        PostResponseDto postResponseDto = new PostResponseDto(postId, "user_1", "test content", new byte[0], 1, LocalDateTime.now());
 
 
         when(postService.updatePost(eq(postId), any(PostRequestDto.class))).thenReturn(postResponseDto);
@@ -161,7 +159,6 @@ class PostControllerTest {
                         .content(asJsonString(postRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid", is(postId.toString())))
-                .andExpect(jsonPath("$.title", is("test title")))
                 .andExpect(jsonPath("$.content", is("test content")))
                 .andExpect(jsonPath("$.username", is("user_1")))
                 .andExpect(jsonPath("$.commentCount", is(1)))

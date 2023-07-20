@@ -36,8 +36,7 @@ public class PostController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createPost(@RequestParam String title,
-                                        @RequestParam String content,
+    public ResponseEntity<?> createPost(@RequestParam String content,
                                         @RequestParam(value = "file", required = false) MultipartFile postImage) {
 
         if (postImage != null && !postImage.isEmpty()) {
@@ -45,7 +44,7 @@ public class PostController {
                 return new ResponseEntity<>("Only image files are allowed!", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
             }
         }
-        PostRequestDto postRequestDto = new PostRequestDto(title, content);
+        PostRequestDto postRequestDto = new PostRequestDto(content);
         return new ResponseEntity<>(postService.createPost(postRequestDto, postImage), HttpStatus.CREATED);
     }
 

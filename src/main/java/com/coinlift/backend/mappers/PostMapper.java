@@ -13,17 +13,16 @@ import java.util.List;
 public class PostMapper {
 
     public PostDetailsResponseDto toPostDetailsResponseDto(Post post, List<CommentResponseDto> commentResponseDtos) {
-        return new PostDetailsResponseDto(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getContent(),
+        return new PostDetailsResponseDto(post.getId(), post.getUser().getUsername(), post.getContent(),
                 null, post.getCreatedAt(), commentResponseDtos, false);
     }
 
     public PostResponseDto toPostResponseDto(Post post) {
-        return new PostResponseDto(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getContent(), null, post.getComments().size(), post.getCreatedAt());
+        return new PostResponseDto(post.getId(), post.getUser().getUsername(), post.getContent(), null, post.getComments().size(), post.getCreatedAt());
     }
 
     public Post toPostEntity(PostRequestDto postRequestDto) {
         return Post.builder()
-                .title(postRequestDto.title())
                 .content(postRequestDto.content())
                 .build();
     }

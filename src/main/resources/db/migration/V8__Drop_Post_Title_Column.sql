@@ -1,0 +1,7 @@
+ALTER TABLE IF EXISTS posts
+    DROP COLUMN title;
+
+UPDATE posts SET content = SUBSTRING(content, 1, 500);
+
+ALTER TABLE IF EXISTS posts
+    ALTER COLUMN content TYPE VARCHAR(500);
