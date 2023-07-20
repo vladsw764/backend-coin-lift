@@ -2,7 +2,7 @@ package com.coinlift.backend.controllers;
 
 import com.coinlift.backend.dtos.users.UserAuthenticationRequest;
 import com.coinlift.backend.dtos.users.UserRegistrationRequest;
-import com.coinlift.backend.pojo.AuthenticationResponse;
+import com.coinlift.backend.dtos.users.AuthenticationResponse;
 import com.coinlift.backend.services.users.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
