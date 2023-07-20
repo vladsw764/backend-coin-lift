@@ -36,3 +36,4 @@ secrets.yml
 
 /postgres-crypto
 /postgres-community
+/postgres-user
