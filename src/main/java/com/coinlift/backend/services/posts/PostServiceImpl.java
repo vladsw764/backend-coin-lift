@@ -122,7 +122,6 @@ public class PostServiceImpl implements PostService {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
         }
 
-        post.setTitle(postRequestDto.title());
         post.setContent(postRequestDto.content());
         postRepository.save(post);
 
