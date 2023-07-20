@@ -1,6 +1,7 @@
 package com.coinlift.backend.config.security.filters;
 
 import com.coinlift.backend.entities.MyUserDetails;
+import com.coinlift.backend.repositories.TokenRepository;
 import com.coinlift.backend.services.users.JwtService;
 import com.coinlift.backend.services.users.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,7 +44,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             MyUserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            boolean isTokenValid = tokenRepository.findByToken(jwt)
+                    .map(token -> !token.isExpired() && !token.isRevoked())
+                    .orElse(false);
+            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
