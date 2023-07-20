@@ -1,4 +1,4 @@
-package com.coinlift.backend.pojo;
+package com.coinlift.backend.dtos.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
