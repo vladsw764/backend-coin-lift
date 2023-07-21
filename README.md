@@ -3,9 +3,10 @@ This project is called CoinLift and involves the development of a backend system
 ## Documentation:
 
 #### 1. AuthenticationController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKjd)
-#### 2. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
-#### 3. CommentController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yfp6)
-#### 4. CryptocurrencyController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yLFp)
+#### 2. FollowersController -> [LINK](https://documenter.getpostman.com/view/26747918/2s946k7BKy)
+#### 3. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
+#### 4. CommentController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yfp6)
+#### 5. CryptocurrencyController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yLFp)
 
 ## Getting Started
 
