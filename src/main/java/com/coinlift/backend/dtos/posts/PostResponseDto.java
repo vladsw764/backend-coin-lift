@@ -16,6 +16,8 @@ public class PostResponseDto {
 
     private String username;
 
+    private UUID creatorId;
+
     private String content;
 
     private byte[] image;
@@ -23,4 +25,6 @@ public class PostResponseDto {
     private Integer commentCount;
 
     private LocalDateTime createdAt;
+
+    private boolean isFollowing;
 }
