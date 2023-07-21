@@ -34,6 +34,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/auth/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/cryptocurrency/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .sessionManagement()
