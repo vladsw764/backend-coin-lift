@@ -35,6 +35,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/cryptocurrency/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .sessionManagement()
