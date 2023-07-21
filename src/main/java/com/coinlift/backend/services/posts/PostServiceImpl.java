@@ -5,6 +5,7 @@ import com.coinlift.backend.dtos.comments.CommentResponseDto;
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
+import com.coinlift.backend.dtos.posts.PostShortResponseDto;
 import com.coinlift.backend.entities.Comment;
 import com.coinlift.backend.entities.MyUserDetails;
 import com.coinlift.backend.entities.Post;
@@ -13,6 +14,7 @@ import com.coinlift.backend.exceptions.ResourceNotFoundException;
 import com.coinlift.backend.mappers.CommentMapper;
 import com.coinlift.backend.mappers.PostMapper;
 import com.coinlift.backend.repositories.CommentRepository;
+import com.coinlift.backend.repositories.FollowerRepository;
 import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.repositories.UserRepository;
 import com.coinlift.backend.services.s3.S3Service;
@@ -38,6 +40,7 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
+    private final FollowerRepository followerRepository;
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
     private final UserRepository userRepository;
@@ -49,8 +52,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponseDto> getLatestPosts() {
-        return postRepository.findLatestPosts().stream().map(postMapper::toPostResponseDto)
+    public List<PostShortResponseDto> getLatestPosts() {
+        return postRepository.findLatestPosts().stream().map(postMapper::toPostShortResponseDto)
                 .peek(post -> post.setImage(getPostImage(post.getUuid()))).toList();
     }
 
@@ -68,11 +71,12 @@ public class PostServiceImpl implements PostService {
         List<CommentResponseDto> commentResponseDtoList = comments.stream().map(commentMapper::toCommentResponseDto).toList();
 
         commentResponseDtoList.forEach(comment ->
-                comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
+            comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
         );
         PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtoList);
         postDto.setImage(getPostImage(postId));
         postDto.setCreator(userId != null && isCreator(userId, post));
+        postDto.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, postDto.getCreatorId()));
 
         return postDto;
     }
@@ -117,6 +121,7 @@ public class PostServiceImpl implements PostService {
     public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
         Post post = getPost(postId);
         UUID userId = getUserId();
+        UUID followerId = getUserIdOrNull();
 
         if (!isCreator(userId, post)) {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
@@ -127,6 +132,7 @@ public class PostServiceImpl implements PostService {
 
         PostResponseDto postResponseDto = postMapper.toPostResponseDto(post);
         postResponseDto.setImage(getPostImage(postId));
+        postResponseDto.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(followerId, postResponseDto.getCreatorId()));
 
         return postResponseDto;
     }
@@ -135,9 +141,13 @@ public class PostServiceImpl implements PostService {
     public List<PostResponseDto> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findAll(pageable);
+        UUID userId = getUserIdOrNull();
 
         return postPage.getContent().stream().map(postMapper::toPostResponseDto)
-                .peek(post -> post.setImage(getPostImage(post.getUuid()))).toList();
+                .peek(post -> {
+                    post.setImage(getPostImage(post.getUuid()));
+                    post.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, post.getCreatorId()));
+                }).toList();
     }
 
     @Override
@@ -175,6 +185,15 @@ public class PostServiceImpl implements PostService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             throw new DeniedAccessException("You can't do it before authenticate!");
+        }
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        return userDetails.user().getId();
+    }
+
+    private static UUID getUserIdOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return null;
         }
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         return userDetails.user().getId();
