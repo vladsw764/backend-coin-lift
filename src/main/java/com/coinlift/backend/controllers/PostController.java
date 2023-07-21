@@ -3,6 +3,7 @@ package com.coinlift.backend.controllers;
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
+import com.coinlift.backend.dtos.posts.PostShortResponseDto;
 import com.coinlift.backend.services.posts.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +32,7 @@ public class PostController {
     }
 
     @GetMapping("/latest")
-    public ResponseEntity<List<PostResponseDto>> getLatestPosts() {
+    public ResponseEntity<List<PostShortResponseDto>> getLatestPosts() {
         return new ResponseEntity<>(postService.getLatestPosts(), HttpStatus.OK);
     }
 

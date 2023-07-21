@@ -18,6 +18,8 @@ public class PostDetailsResponseDto {
 
     private String username;
 
+    private UUID creatorId;
+
     private String content;
 
     private byte[] image;
@@ -27,4 +29,6 @@ public class PostDetailsResponseDto {
     private List<CommentResponseDto> comments;
 
     private boolean isCreator;
+
+    private boolean isFollowing;
 }
