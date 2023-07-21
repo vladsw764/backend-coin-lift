@@ -1,5 +1,6 @@
 package com.coinlift.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +21,16 @@ public class Follower {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "from_user_fk", referencedColumnName = "id")
     private User from;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "to_user_fk", referencedColumnName = "id")
     private User to;
+
+    public Follower(User from, User to) {
+        this.from = from;
+        this.to = to;
+    }
 }
