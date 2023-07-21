@@ -3,6 +3,7 @@ package com.coinlift.backend.controllers;
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
+import com.coinlift.backend.dtos.posts.PostShortResponseDto;
 import com.coinlift.backend.services.posts.PostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,13 +46,22 @@ class PostControllerTest {
     @MockBean
     PostService postService;
 
+    private List<PostShortResponseDto> postShortResponseDtoList;
     private List<PostResponseDto> postResponseDtoList;
+
 
     @BeforeEach
     void setUp() {
+        postShortResponseDtoList = Arrays.asList(
+                new PostShortResponseDto(UUID.randomUUID(), "content_1", new byte[0], 2),
+                new PostShortResponseDto(UUID.randomUUID(), "content_2", new byte[0], 34)
+        );
+
         postResponseDtoList = Arrays.asList(
-                new PostResponseDto(UUID.randomUUID(), "user_1", "content_1", new byte[0], 2, LocalDateTime.now()),
-                new PostResponseDto(UUID.randomUUID(), "user_2", "content_2", new byte[0], 34, LocalDateTime.now())
+                new PostResponseDto(UUID.randomUUID(), "username_1", UUID.randomUUID(), "content_1",
+                        new byte[0], 2, LocalDateTime.now(), false),
+                new PostResponseDto(UUID.randomUUID(), "username_2", UUID.randomUUID(), "content_2",
+                        new byte[0], 5, LocalDateTime.now(), true)
         );
     }
 
@@ -59,11 +69,11 @@ class PostControllerTest {
     @Test
     @DisplayName("GET api/v1/posts/latest")
     void getLatestPosts() throws Exception {
-        when(postService.getLatestPosts()).thenReturn(postResponseDtoList);
+        when(postService.getLatestPosts()).thenReturn(postShortResponseDtoList);
 
         mockMvc.perform(get("/api/v1/posts/latest"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(postResponseDtoList.size()))
+                .andExpect(jsonPath("$.length()").value(postShortResponseDtoList.size()))
                 .andDo(print());
     }
 
@@ -92,8 +102,8 @@ class PostControllerTest {
 
         // Create a mock PostDetailsResponseDto object with the expected values
         PostDetailsResponseDto responseDto = new PostDetailsResponseDto(
-                uuid, "username", "content",
-                new byte[0], LocalDateTime.now(), new ArrayList<>(), true
+                uuid, "username", UUID.randomUUID(), "content",
+                new byte[0], LocalDateTime.now(), new ArrayList<>(), true, false
         );
 
         // Mock the postService.getPostById() method to return the expected response
@@ -149,7 +159,7 @@ class PostControllerTest {
         UUID postId = UUID.randomUUID();
 
         PostRequestDto postRequestDto = new PostRequestDto("test content");
-        PostResponseDto postResponseDto = new PostResponseDto(postId, "user_1", "test content", new byte[0], 1, LocalDateTime.now());
+        PostResponseDto postResponseDto = new PostResponseDto(postId, "user_1", UUID.randomUUID(), "test content", new byte[0], 1, LocalDateTime.now(), false);
 
 
         when(postService.updatePost(eq(postId), any(PostRequestDto.class))).thenReturn(postResponseDto);
