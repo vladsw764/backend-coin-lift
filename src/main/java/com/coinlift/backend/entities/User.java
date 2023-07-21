@@ -41,13 +41,13 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<AuthenticationToken> tokens;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "from")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "from")
     private List<Follower> followers = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer followers_count;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "to")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "to")
     private List<Follower> following = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
