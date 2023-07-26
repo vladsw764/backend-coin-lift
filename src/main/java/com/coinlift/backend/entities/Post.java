@@ -44,4 +44,14 @@ public class Post {
 
     public Post() {
     }
+
+    public Post(UUID id, String content, String imageLink, LocalDateTime createdAt, LocalDateTime updatedAt, List<Comment> comments, User user) {
+        this.id = id;
+        this.content = content;
+        this.imageLink = imageLink;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.comments = comments;
+        this.user = user;
+    }
 }

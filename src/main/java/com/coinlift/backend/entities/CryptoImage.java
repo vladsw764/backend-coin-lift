@@ -22,4 +22,11 @@ public class CryptoImage {
 
     public CryptoImage() {
     }
+
+    public CryptoImage(Long id, Integer cryptoId, String cryptoImageUrl, String cryptoName) {
+        this.id = id;
+        this.cryptoId = cryptoId;
+        this.cryptoImageUrl = cryptoImageUrl;
+        this.cryptoName = cryptoName;
+    }
 }
