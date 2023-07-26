@@ -1,7 +1,9 @@
 package com.coinlift.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +12,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -52,4 +52,23 @@ public class User {
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer following_count;
+
+
+    public User(UUID id, String username, String email, String password, Role role, List<Comment> comments, List<Post> posts, List<AuthenticationToken> tokens, List<Follower> followers, Integer followers_count, List<Follower> following, Integer following_count) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.comments = comments;
+        this.posts = posts;
+        this.tokens = tokens;
+        this.followers = followers;
+        this.followers_count = followers_count;
+        this.following = following;
+        this.following_count = following_count;
+    }
+
+    public User() {
+    }
 }

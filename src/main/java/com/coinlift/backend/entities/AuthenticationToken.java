@@ -1,13 +1,13 @@
 package com.coinlift.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Entity(name = "Token")
 @Table(name = "auth_token")
 public class AuthenticationToken {
@@ -28,4 +28,7 @@ public class AuthenticationToken {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public AuthenticationToken() {
+    }
 }

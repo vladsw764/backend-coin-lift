@@ -1,12 +1,11 @@
 package com.coinlift.backend.services.users;
 
+import com.coinlift.backend.dtos.users.AuthenticationResponse;
 import com.coinlift.backend.dtos.users.UserAuthenticationRequest;
 import com.coinlift.backend.dtos.users.UserRegistrationRequest;
 import com.coinlift.backend.entities.*;
-import com.coinlift.backend.dtos.users.AuthenticationResponse;
 import com.coinlift.backend.repositories.TokenRepository;
 import com.coinlift.backend.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,14 +14,28 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     private final TokenRepository tokenRepository;
+
     private final JwtService jwtService;
+
     private final AuthenticationManager authenticationManager;
+
     private final UserDetailsServiceImpl userDetailsService;
+
+    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenRepository tokenRepository, JwtService jwtService, AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenRepository = tokenRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public AuthenticationResponse register(UserRegistrationRequest userRegistrationRequest) {

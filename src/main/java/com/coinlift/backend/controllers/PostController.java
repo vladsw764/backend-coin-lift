@@ -5,7 +5,6 @@ import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.dtos.posts.PostShortResponseDto;
 import com.coinlift.backend.services.posts.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,11 +18,15 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
 @CrossOrigin("*")
 public class PostController {
+
     private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> getAllPosts(@RequestParam(defaultValue = "0") int page,
