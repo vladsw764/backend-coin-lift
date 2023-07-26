@@ -31,4 +31,13 @@ public class AuthenticationToken {
 
     public AuthenticationToken() {
     }
+
+    public AuthenticationToken(Long id, String token, TokenType tokenType, boolean expired, boolean revoked, User user) {
+        this.id = id;
+        this.token = token;
+        this.tokenType = tokenType;
+        this.expired = expired;
+        this.revoked = revoked;
+        this.user = user;
+    }
 }

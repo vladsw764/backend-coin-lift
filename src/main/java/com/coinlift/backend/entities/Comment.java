@@ -41,4 +41,13 @@ public class Comment {
 
     public Comment() {
     }
+
+    public Comment(UUID id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, Post post, User user) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.post = post;
+        this.user = user;
+    }
 }
