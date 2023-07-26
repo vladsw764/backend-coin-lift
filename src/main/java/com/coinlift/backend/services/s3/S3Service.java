@@ -1,6 +1,5 @@
 package com.coinlift.backend.services.s3;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -18,10 +17,13 @@ import java.io.IOException;
 
 @Service
 @Log4j2
-@RequiredArgsConstructor
 public class S3Service {
 
     private final S3Client s3;
+
+    public S3Service(S3Client s3) {
+        this.s3 = s3;
+    }
 
     public void putObject(String bucketName, String key, byte[] file) {
 

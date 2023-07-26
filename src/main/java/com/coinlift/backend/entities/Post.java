@@ -1,7 +1,9 @@
 package com.coinlift.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,8 +17,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class Post {
 
     @Id
@@ -41,4 +41,7 @@ public class Post {
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USERS_POSTS"))
     private User user;
+
+    public Post() {
+    }
 }

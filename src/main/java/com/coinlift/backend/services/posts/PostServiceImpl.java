@@ -18,7 +18,6 @@ import com.coinlift.backend.repositories.FollowerRepository;
 import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.repositories.UserRepository;
 import com.coinlift.backend.services.s3.S3Service;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,17 +32,34 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+
     private final PostMapper postMapper;
+
     private final CommentMapper commentMapper;
+
     private final CommentRepository commentRepository;
+
     private final FollowerRepository followerRepository;
+
     private final S3Service s3Service;
+
     private final S3Buckets s3Buckets;
+
     private final UserRepository userRepository;
+
+    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, CommentMapper commentMapper, CommentRepository commentRepository, FollowerRepository followerRepository, S3Service s3Service, S3Buckets s3Buckets, UserRepository userRepository) {
+        this.postRepository = postRepository;
+        this.postMapper = postMapper;
+        this.commentMapper = commentMapper;
+        this.commentRepository = commentRepository;
+        this.followerRepository = followerRepository;
+        this.s3Service = s3Service;
+        this.s3Buckets = s3Buckets;
+        this.userRepository = userRepository;
+    }
 
     private Post getPost(UUID postId) {
         return postRepository
@@ -71,7 +87,7 @@ public class PostServiceImpl implements PostService {
         List<CommentResponseDto> commentResponseDtoList = comments.stream().map(commentMapper::toCommentResponseDto).toList();
 
         commentResponseDtoList.forEach(comment ->
-            comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
+                comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
         );
         PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtoList);
         postDto.setImage(getPostImage(postId));

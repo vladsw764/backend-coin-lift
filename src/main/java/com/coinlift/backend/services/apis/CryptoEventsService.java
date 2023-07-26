@@ -3,7 +3,6 @@ package com.coinlift.backend.services.apis;
 import com.coinlift.backend.entities.CryptoImage;
 import com.coinlift.backend.pojo.CryptoEvent;
 import com.coinlift.backend.repositories.CryptoImageRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,14 +10,23 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CryptoEventsService {
+
     private final CryptoImageRepository cryptoImageRepository;
+
+    public CryptoEventsService(CryptoImageRepository cryptoImageRepository) {
+        this.cryptoImageRepository = cryptoImageRepository;
+    }
+
     private static final String API_BASE_URL = "https://api.coinpaprika.com/v1/coins/";
+
     private static final String API_EVENT_ENDPOINT = "/events";
+
     List<String> topCryptos = Arrays.asList("btc-bitcoin", "eth-ethereum",
             "bnb-binance-coin", "ada-cardano", "xrp-xrp");
 

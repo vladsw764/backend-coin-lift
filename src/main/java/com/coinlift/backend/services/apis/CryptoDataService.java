@@ -4,7 +4,6 @@ import com.coinlift.backend.entities.CryptoImage;
 import com.coinlift.backend.pojo.CryptoData;
 import com.coinlift.backend.pojo.CryptoPercentData;
 import com.coinlift.backend.repositories.CryptoImageRepository;
-import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,12 +18,17 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service@RequiredArgsConstructor
+@Service
 public class CryptoDataService {
     @Value("${coinmarketcap.api.key}")
     private String apiKey;
 
     private final CryptoImageRepository cryptoImageRepository;
+
+    public CryptoDataService(CryptoImageRepository cryptoImageRepository) {
+        this.cryptoImageRepository = cryptoImageRepository;
+    }
+
     private final String url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
 
     public List<CryptoData> getAllCryptoData() {
