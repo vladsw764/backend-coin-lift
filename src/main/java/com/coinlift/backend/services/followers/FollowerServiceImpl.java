@@ -44,8 +44,8 @@ public class FollowerServiceImpl implements FollowerService {
 
         Follower follow = new Follower(from, to);
 
-        from.setFollowing_count(from.getFollowing_count() + 1);
-        to.setFollowers_count(to.getFollowers_count() + 1);
+        from.setFollowingCount(from.getFollowingCount() + 1);
+        to.setFollowersCount(to.getFollowersCount() + 1);
 
         followerRepository.save(follow);
         userRepository.save(from);
@@ -69,8 +69,8 @@ public class FollowerServiceImpl implements FollowerService {
         Follower follow = followerRepository.findByFromAndTo(from, to);
         if (follow != null) {
             followerRepository.delete(follow);
-            from.setFollowing_count(from.getFollowing_count() - 1);
-            to.setFollowers_count(to.getFollowers_count() - 1);
+            from.setFollowingCount(from.getFollowingCount() - 1);
+            to.setFollowersCount(to.getFollowersCount() - 1);
             userRepository.save(from);
             userRepository.save(to);
         }
@@ -89,13 +89,13 @@ public class FollowerServiceImpl implements FollowerService {
     @Override
     public int getFollowerCount(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        return user.getFollowers_count();
+        return user.getFollowersCount();
     }
 
     @Override
     public int getFollowingCount(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        return user.getFollowing_count();
+        return user.getFollowingCount();
     }
 
     @Override

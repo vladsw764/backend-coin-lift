@@ -51,8 +51,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(userRegistrationRequest.emailAddress())
                 .password(passwordEncoder.encode(userRegistrationRequest.password()))
                 .role(Role.USER)
-                .followers_count(0)
-                .following_count(0)
+                .followersCount(0)
+                .followingCount(0)
                 .build();
         User savedUser = userRepository.save(user);
         MyUserDetails userDetails = new MyUserDetails(user);

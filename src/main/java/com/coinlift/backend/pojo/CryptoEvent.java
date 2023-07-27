@@ -1,11 +1,7 @@
 package com.coinlift.backend.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class CryptoEvent {
 
     private String cryptoName;
@@ -27,4 +23,43 @@ public class CryptoEvent {
         this.isConference = isConference;
     }
 
+    public String getCryptoName() {
+        return cryptoName;
+    }
+
+    public void setCryptoName(String cryptoName) {
+        this.cryptoName = cryptoName;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public boolean isConference() {
+        return isConference;
+    }
+
+    public void setConference(boolean conference) {
+        isConference = conference;
+    }
 }

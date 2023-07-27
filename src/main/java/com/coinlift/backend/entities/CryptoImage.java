@@ -1,12 +1,8 @@
 package com.coinlift.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "crypto_images")
 public class CryptoImage {
 
@@ -27,6 +23,38 @@ public class CryptoImage {
         this.id = id;
         this.cryptoId = cryptoId;
         this.cryptoImageUrl = cryptoImageUrl;
+        this.cryptoName = cryptoName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getCryptoId() {
+        return cryptoId;
+    }
+
+    public void setCryptoId(Integer cryptoId) {
+        this.cryptoId = cryptoId;
+    }
+
+    public String getCryptoImageUrl() {
+        return cryptoImageUrl;
+    }
+
+    public void setCryptoImageUrl(String cryptoImageUrl) {
+        this.cryptoImageUrl = cryptoImageUrl;
+    }
+
+    public String getCryptoName() {
+        return cryptoName;
+    }
+
+    public void setCryptoName(String cryptoName) {
         this.cryptoName = cryptoName;
     }
 }
