@@ -92,24 +92,19 @@ class PostControllerTest {
     @Test
     @DisplayName("GET api/v1/posts/{postId}")
     void getPostById_returnsPost() throws Exception {
-        // Create a UUID for the post
         UUID uuid = UUID.randomUUID();
 
-        // Create a pageable object
         int page = 0;
         int size = 20;
         Pageable pageable = PageRequest.of(page, size);
 
-        // Create a mock PostDetailsResponseDto object with the expected values
         PostDetailsResponseDto responseDto = new PostDetailsResponseDto(
                 uuid, "username", UUID.randomUUID(), "content",
                 new byte[0], LocalDateTime.now(), new ArrayList<>(), true, false
         );
 
-        // Mock the postService.getPostById() method to return the expected response
         when(postService.getPostById(uuid, pageable)).thenReturn(responseDto);
 
-        // Perform the mockMvc request
         mockMvc.perform(get("/api/v1/posts/{uuid}", uuid)
                         .param("page", String.valueOf(page))
                         .param("size", String.valueOf(size)))

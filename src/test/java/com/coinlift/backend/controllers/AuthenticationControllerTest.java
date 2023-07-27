@@ -1,8 +1,8 @@
 package com.coinlift.backend.controllers;
 
+import com.coinlift.backend.dtos.users.AuthenticationResponse;
 import com.coinlift.backend.dtos.users.UserAuthenticationRequest;
 import com.coinlift.backend.dtos.users.UserRegistrationRequest;
-import com.coinlift.backend.dtos.users.AuthenticationResponse;
 import com.coinlift.backend.services.users.AuthenticationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc

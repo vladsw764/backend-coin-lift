@@ -1,10 +1,5 @@
 package com.coinlift.backend.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class CryptoPercentData {
 
     private String name;
@@ -16,6 +11,30 @@ public class CryptoPercentData {
     public CryptoPercentData(String name, double percentChange24h, String imageUrl) {
         this.name = name;
         this.percentChange24h = percentChange24h;
+        this.imageUrl = imageUrl;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPercentChange24h() {
+        return percentChange24h;
+    }
+
+    public void setPercentChange24h(double percentChange24h) {
+        this.percentChange24h = percentChange24h;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 }
