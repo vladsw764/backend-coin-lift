@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
@@ -121,7 +122,7 @@ class PostControllerTest {
 
         UUID postId = UUID.randomUUID();
 
-        when(postService.createPost(any(PostRequestDto.class), any(MultipartFile.class))).thenReturn(postId);
+        when(postService.createPost(any(PostRequestDto.class), any(MultipartFile.class), any(Authentication.class))).thenReturn(postId);
 
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "file",
