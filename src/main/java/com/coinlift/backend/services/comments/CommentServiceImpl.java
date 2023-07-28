@@ -45,9 +45,8 @@ public class CommentServiceImpl implements CommentService {
         UUID userId = getUserId();
         Comment comment = getComment(postId, commentId);
 
-        if (isNotCreator(userId, comment)) {
-            throw new DeniedAccessException("You don't have access, because you're not creator of this comment!");
-        }
+        checkAccess(userId, comment);
+
         comment.setContent(commentRequestDto.content());
         CommentResponseDto dto = commentMapper.toCommentResponseDto(commentRepository.save(comment));
         dto.setCommentCreator(true);
@@ -59,13 +58,12 @@ public class CommentServiceImpl implements CommentService {
         UUID userId = getUserId();
         Comment comment = getComment(postId, commentId);
 
-        if (isNotCreator(userId, comment)) {
-            throw new DeniedAccessException("You don't have access, because you're not creator of this comment!");
-        }
+        checkAccess(userId, comment);
+
         commentRepository.deleteById(comment.getId());
     }
 
-    private static UUID getUserId() {
+    private UUID getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             throw new DeniedAccessException("You can't do it before authenticate!");
@@ -79,7 +77,9 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("comment with id " + commentId + " not found!"));
     }
 
-    private static boolean isNotCreator(UUID userId, Comment comment) {
-        return !userId.equals(comment.getUser().getId());
+    private void checkAccess(UUID userId, Comment comment) {
+        if (!userId.equals(comment.getUser().getId())) {
+            throw new DeniedAccessException("You don't have access, because you're not creator of this comment!");
+        }
     }
 }

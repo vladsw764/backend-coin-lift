@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,14 +30,11 @@ public class FollowerServiceImpl implements FollowerService {
     }
 
     @Override
+    @Transactional
     public void followUser(UUID followingId) {
         UUID followerId = getUserId();
-        User from = userRepository.findById(followerId).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("User with id %s not found.", followerId))
-        );
-        User to = userRepository.findById(followingId).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("User with id %s not found.", followingId))
-        );
+        User from = getUserById(followerId);
+        User to = getUserById(followingId);
 
         if (isFollowing(followingId)) {
             throw new IllegalStateException("You are already following this user.");
@@ -48,19 +46,15 @@ public class FollowerServiceImpl implements FollowerService {
         to.setFollowersCount(to.getFollowersCount() + 1);
 
         followerRepository.save(follow);
-        userRepository.save(from);
-        userRepository.save(to);
+        userRepository.saveAll(List.of(from, to));
     }
 
     @Override
+    @Transactional
     public void unfollowUser(UUID followingId) {
         UUID followerId = getUserId();
-        User from = userRepository.findById(followerId).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("User with id %s not found.", followerId))
-        );
-        User to = userRepository.findById(followingId).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("User with id %s not found.", followerId))
-        );
+        User from = getUserById(followerId);
+        User to = getUserById(followingId);
 
         if (!isFollowing(followingId)) {
             throw new IllegalStateException("You are not following this user.");
@@ -69,10 +63,11 @@ public class FollowerServiceImpl implements FollowerService {
         Follower follow = followerRepository.findByFromAndTo(from, to);
         if (follow != null) {
             followerRepository.delete(follow);
+
             from.setFollowingCount(from.getFollowingCount() - 1);
             to.setFollowersCount(to.getFollowersCount() - 1);
-            userRepository.save(from);
-            userRepository.save(to);
+
+            userRepository.saveAll(List.of(from, to));
         }
     }
 
@@ -88,28 +83,30 @@ public class FollowerServiceImpl implements FollowerService {
 
     @Override
     public int getFollowerCount(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        return user.getFollowersCount();
+        return userRepository.findById(userId)
+                .map(User::getFollowersCount)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", userId)));
     }
 
     @Override
     public int getFollowingCount(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        return user.getFollowingCount();
+        return userRepository.findById(userId)
+                .map(User::getFollowingCount)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", userId)));
     }
 
-    @Override
-    public boolean isFollowing(UUID to) {
-        UUID from;
-        try {
-            from = getUserId();
-        } catch (DeniedAccessException e) {
-            from = null;
-        }
+    private boolean isFollowing(UUID to) {
+        UUID from = getUserId();
         return followerRepository.existsByFrom_IdAndTo_Id(from, to);
     }
 
-    private static UUID getUserId() {
+    private User getUserById(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("User with id %s not found.", userId))
+        );
+    }
+
+    private UUID getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             throw new DeniedAccessException("You can't do it before authenticate!");

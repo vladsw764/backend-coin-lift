@@ -38,9 +38,6 @@ public class Post {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USERS_POSTS"))
     private User user;
 
-    public Post() {
-    }
-
     public Post(UUID id, String content, String imageLink, LocalDateTime createdAt, LocalDateTime updatedAt, List<Comment> comments, User user) {
         this.id = id;
         this.content = content;
@@ -49,6 +46,9 @@ public class Post {
         this.updatedAt = updatedAt;
         this.comments = comments;
         this.user = user;
+    }
+
+    public Post() {
     }
 
     public UUID getId() {

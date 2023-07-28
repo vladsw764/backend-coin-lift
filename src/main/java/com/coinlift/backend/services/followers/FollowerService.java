@@ -19,6 +19,4 @@ public interface FollowerService {
 
     int getFollowingCount(UUID userId);
 
-    boolean isFollowing(UUID followingId);
-
 }

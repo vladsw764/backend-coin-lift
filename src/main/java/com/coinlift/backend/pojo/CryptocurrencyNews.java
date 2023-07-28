@@ -23,6 +23,9 @@ public class CryptocurrencyNews {
         this.createdAt = createdAt;
     }
 
+    public CryptocurrencyNews() {
+    }
+
     public String getTitle() {
         return title;
     }

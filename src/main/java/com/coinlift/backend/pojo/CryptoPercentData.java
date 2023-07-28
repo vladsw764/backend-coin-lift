@@ -14,6 +14,9 @@ public class CryptoPercentData {
         this.imageUrl = imageUrl;
     }
 
+    public CryptoPercentData() {
+    }
+
     public String getName() {
         return name;
     }

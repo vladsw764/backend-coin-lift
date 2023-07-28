@@ -25,9 +25,6 @@ public class AuthenticationToken {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AuthenticationToken() {
-    }
-
     public AuthenticationToken(Long id, String token, TokenType tokenType, boolean expired, boolean revoked, User user) {
         this.id = id;
         this.token = token;
@@ -35,6 +32,9 @@ public class AuthenticationToken {
         this.expired = expired;
         this.revoked = revoked;
         this.user = user;
+    }
+
+    public AuthenticationToken() {
     }
 
     public Long getId() {
