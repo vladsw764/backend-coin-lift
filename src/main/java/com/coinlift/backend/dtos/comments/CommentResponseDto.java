@@ -1,13 +1,8 @@
 package com.coinlift.backend.dtos.comments;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
 public class CommentResponseDto {
 
     private UUID id;
@@ -26,5 +21,48 @@ public class CommentResponseDto {
         this.createdAt = createdAt;
         this.userId = userId;
         this.isCommentCreator = isCommentCreator;
+    }
+
+    public CommentResponseDto() {
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public boolean isCommentCreator() {
+        return isCommentCreator;
+    }
+
+    public void setCommentCreator(boolean commentCreator) {
+        isCommentCreator = commentCreator;
     }
 }

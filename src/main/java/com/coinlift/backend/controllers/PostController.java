@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,8 @@ public class PostController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createPost(@RequestParam String content,
-                                        @RequestParam(value = "file", required = false) MultipartFile postImage) {
+                                        @RequestParam(value = "file", required = false) MultipartFile postImage,
+                                        Authentication authentication) {
 
         if (postImage != null && !postImage.isEmpty()) {
             if (!Objects.requireNonNull(postImage.getContentType()).startsWith("image/")) {
@@ -49,7 +51,7 @@ public class PostController {
             }
         }
         PostRequestDto postRequestDto = new PostRequestDto(content);
-        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage), HttpStatus.CREATED);
+        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage, authentication), HttpStatus.CREATED);
     }
 
 

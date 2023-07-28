@@ -5,6 +5,7 @@ import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.dtos.posts.PostShortResponseDto;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface PostService {
 
     void removePost(UUID postId);
 
-    UUID createPost(PostRequestDto postRequestDto, MultipartFile file);
+    UUID createPost(PostRequestDto postRequestDto, MultipartFile file, Authentication authentication);
 
     PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto);
 

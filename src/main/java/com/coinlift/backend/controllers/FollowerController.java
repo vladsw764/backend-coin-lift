@@ -55,9 +55,4 @@ public class FollowerController {
         return ResponseEntity.ok(followingCount);
     }
 
-    @GetMapping("/{followingId}/is-following")
-    public ResponseEntity<Boolean> isFollowing(@PathVariable UUID followingId) {
-        boolean isFollowing = followerService.isFollowing(followingId);
-        return ResponseEntity.ok(isFollowing);
-    }
 }
