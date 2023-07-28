@@ -3,7 +3,6 @@ package com.coinlift.backend.controllers;
 import com.coinlift.backend.dtos.comments.CommentRequestDto;
 import com.coinlift.backend.dtos.comments.CommentResponseDto;
 import com.coinlift.backend.services.comments.CommentService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,12 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/posts/{postId}")
 @CrossOrigin("*")
 public class CommentController {
 
     private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     @PostMapping
     public ResponseEntity<UUID> createComment(@RequestBody CommentRequestDto commentRequestDto,

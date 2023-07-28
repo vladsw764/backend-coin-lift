@@ -1,12 +1,16 @@
 package com.coinlift.backend.dtos.users;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserAuthenticationRequest {
     private String email;
     private String password;
+
+    public UserAuthenticationRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

@@ -1,13 +1,9 @@
 package com.coinlift.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@Setter
-@AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Entity(name = "Token")
 @Table(name = "auth_token")
 public class AuthenticationToken {
@@ -28,4 +24,64 @@ public class AuthenticationToken {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public AuthenticationToken() {
+    }
+
+    public AuthenticationToken(Long id, String token, TokenType tokenType, boolean expired, boolean revoked, User user) {
+        this.id = id;
+        this.token = token;
+        this.tokenType = tokenType;
+        this.expired = expired;
+        this.revoked = revoked;
+        this.user = user;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public TokenType getTokenType() {
+        return tokenType;
+    }
+
+    public void setTokenType(TokenType tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public boolean isRevoked() {
+        return revoked;
+    }
+
+    public void setRevoked(boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

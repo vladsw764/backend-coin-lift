@@ -1,7 +1,6 @@
 package com.coinlift.backend.dtos.posts;
 
 import com.coinlift.backend.dtos.comments.CommentResponseDto;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +10,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class PostDetailsResponseDto {
 
     private UUID uuid;
@@ -31,4 +29,16 @@ public class PostDetailsResponseDto {
     private boolean isCreator;
 
     private boolean isFollowing;
+
+    public PostDetailsResponseDto(UUID uuid, String username, UUID creatorId, String content, byte[] image, LocalDateTime createdAt, List<CommentResponseDto> comments, boolean isCreator, boolean isFollowing) {
+        this.uuid = uuid;
+        this.username = username;
+        this.creatorId = creatorId;
+        this.content = content;
+        this.image = image;
+        this.createdAt = createdAt;
+        this.comments = comments;
+        this.isCreator = isCreator;
+        this.isFollowing = isFollowing;
+    }
 }

@@ -18,7 +18,6 @@ import com.coinlift.backend.repositories.FollowerRepository;
 import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.repositories.UserRepository;
 import com.coinlift.backend.services.s3.S3Service;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,19 +30,38 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
-@RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+
     private final PostMapper postMapper;
+
     private final CommentMapper commentMapper;
+
     private final CommentRepository commentRepository;
+
     private final FollowerRepository followerRepository;
+
     private final S3Service s3Service;
+
     private final S3Buckets s3Buckets;
+
     private final UserRepository userRepository;
+
+    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, CommentMapper commentMapper, CommentRepository commentRepository, FollowerRepository followerRepository, S3Service s3Service, S3Buckets s3Buckets, UserRepository userRepository) {
+        this.postRepository = postRepository;
+        this.postMapper = postMapper;
+        this.commentMapper = commentMapper;
+        this.commentRepository = commentRepository;
+        this.followerRepository = followerRepository;
+        this.s3Service = s3Service;
+        this.s3Buckets = s3Buckets;
+        this.userRepository = userRepository;
+    }
 
     private Post getPost(UUID postId) {
         return postRepository
@@ -71,7 +89,7 @@ public class PostServiceImpl implements PostService {
         List<CommentResponseDto> commentResponseDtoList = comments.stream().map(commentMapper::toCommentResponseDto).toList();
 
         commentResponseDtoList.forEach(comment ->
-            comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
+                comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
         );
         PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtoList);
         postDto.setImage(getPostImage(postId));
@@ -96,8 +114,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file) {
-        UUID userId = getUserId();
+    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, Authentication authentication) {
+        UUID userId = getUserIdNew(authentication);
 
         Post post = postMapper.toPostEntity(postRequestDto);
         post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
@@ -137,30 +155,59 @@ public class PostServiceImpl implements PostService {
         return postResponseDto;
     }
 
+//    @Override
+//    public List<PostResponseDto> getAllPosts(int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Post> postPage = postRepository.findAll(pageable);
+//        UUID userId = getUserIdOrNull();
+//
+//        return postPage.getContent().stream().map(postMapper::toPostResponseDto)
+//                .peek(post -> {
+//                    post.setImage(getPostImage(post.getUuid()));
+//                    post.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, post.getCreatorId()));
+//                }).toList();
+//    }
+
     @Override
     public List<PostResponseDto> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findAll(pageable);
         UUID userId = getUserIdOrNull();
 
-        return postPage.getContent().stream().map(postMapper::toPostResponseDto)
-                .peek(post -> {
-                    post.setImage(getPostImage(post.getUuid()));
-                    post.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, post.getCreatorId()));
-                }).toList();
+        List<PostResponseDto> postResponseDtoList = postPage.getContent().stream()
+                .map(postMapper::toPostResponseDto)
+                .toList();
+
+        // Process each post in parallel using CompletableFutures
+        List<CompletableFuture<Void>> futures = postResponseDtoList.stream()
+                .map(postDto -> CompletableFuture.runAsync(() -> {
+                    postDto.setImage(getPostImage(postDto.getUuid()));
+                    postDto.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, postDto.getCreatorId()));
+                }))
+                .toList();
+
+        // Wait for all CompletableFutures to complete
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        try {
+            allFutures.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return postResponseDtoList;
     }
+
 
     @Override
     public byte[] getPostImage(UUID postId) {
-        Post post = postRepository
-                .findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("post with id [%s] not found".formatted(postId)));
+        Post post = getPost(postId);
+        String imageLink = post.getImageLink();
 
-        if (post.getImageLink() == null) {
+        if (imageLink == null) {
             return null;
         }
 
-        if (post.getImageLink().isBlank()) {
+        if (imageLink.isBlank()) {
             throw new ResourceNotFoundException("post with id [%s] post image  not found".formatted(postId));
         }
 
@@ -183,6 +230,14 @@ public class PostServiceImpl implements PostService {
 
     private static UUID getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            throw new DeniedAccessException("You can't do it before authenticate!");
+        }
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        return userDetails.user().getId();
+    }
+
+    private static UUID getUserIdNew(Authentication authentication) {
         if (authentication instanceof AnonymousAuthenticationToken) {
             throw new DeniedAccessException("You can't do it before authenticate!");
         }

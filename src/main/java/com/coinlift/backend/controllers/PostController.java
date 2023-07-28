@@ -5,12 +5,12 @@ import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.dtos.posts.PostShortResponseDto;
 import com.coinlift.backend.services.posts.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,11 +19,15 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
 @CrossOrigin("*")
 public class PostController {
+
     private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> getAllPosts(@RequestParam(defaultValue = "0") int page,
@@ -38,7 +42,8 @@ public class PostController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createPost(@RequestParam String content,
-                                        @RequestParam(value = "file", required = false) MultipartFile postImage) {
+                                        @RequestParam(value = "file", required = false) MultipartFile postImage,
+                                        Authentication authentication) {
 
         if (postImage != null && !postImage.isEmpty()) {
             if (!Objects.requireNonNull(postImage.getContentType()).startsWith("image/")) {
@@ -46,7 +51,7 @@ public class PostController {
             }
         }
         PostRequestDto postRequestDto = new PostRequestDto(content);
-        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage), HttpStatus.CREATED);
+        return new ResponseEntity<>(postService.createPost(postRequestDto, postImage, authentication), HttpStatus.CREATED);
     }
 
 

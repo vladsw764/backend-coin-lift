@@ -9,7 +9,6 @@ import com.coinlift.backend.exceptions.ResourceNotFoundException;
 import com.coinlift.backend.mappers.CommentMapper;
 import com.coinlift.backend.repositories.CommentRepository;
 import com.coinlift.backend.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,11 +17,19 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
+
     private final CommentRepository commentRepository;
+
     private final CommentMapper commentMapper;
+
     private final UserRepository userRepository;
+
+    public CommentServiceImpl(CommentRepository commentRepository, CommentMapper commentMapper, UserRepository userRepository) {
+        this.commentRepository = commentRepository;
+        this.commentMapper = commentMapper;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UUID createComment(CommentRequestDto commentRequestDto, UUID postId) {
