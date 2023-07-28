@@ -1,12 +1,8 @@
 # Backend for CoinLift. 
-This project is called CoinLift and involves the development of a backend system for a cryptocurrency application. The team consists of one backend developer, one frontend developer, and two designers.
+This project is called CoinLift and involves the development of a backend system for a cryptocurrency application. The team consists of one backend developer, three frontend developer, and three designers.
 ## Documentation:
 
-#### 1. AuthenticationController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKjd)
-#### 2. FollowersController -> [LINK](https://documenter.getpostman.com/view/26747918/2s946k7BKy)
-#### 3. PostController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8xKp1)
-#### 4. CommentController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yfp6)
-#### 5. CryptocurrencyController -> [LINK](https://documenter.getpostman.com/view/26747918/2s93m8yLFp)
+#### Swagger Docs -> [LINK](https://backend-coin-lift-production.up.railway.app/swagger-ui/index.html)
 
 ## Getting Started
 
