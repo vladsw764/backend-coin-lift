@@ -1,6 +1,7 @@
 package com.coinlift.backend.services.s3;
 
 import lombok.extern.log4j.Log4j2;
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -9,11 +10,11 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 @Log4j2
@@ -44,7 +45,7 @@ public class S3Service {
         try {
             return s3.getObject(objectRequest).readAllBytes();
         } catch (IOException e) {
-            log.error("can't get data from bucket: " + bucketName);
+            log.error("Error while getting data with key: {}", key);
             throw new RuntimeException(e);
         }
     }
@@ -58,26 +59,24 @@ public class S3Service {
         s3.deleteObject(objectRequest);
     }
 
-    private byte[] reduceImageQuality(byte[] imageBytes) {
+    public byte[] reduceImageQuality(byte[] imageBytes) {
         int targetWidth = 683;
         int targetHeight = 407;
+
         try {
+            log.info("start - reduceImageQuality(): " + LocalDateTime.now());
             ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
             BufferedImage image = ImageIO.read(inputStream);
 
-            // Resize the image to the target dimensions
-            Image resizedImage = image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
-            BufferedImage bufferedResizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics2D = bufferedResizedImage.createGraphics();
-            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            graphics2D.drawImage(resizedImage, 0, 0, targetWidth, targetHeight, null);
-            graphics2D.dispose();
+            BufferedImage resizedImage = Scalr.resize(image, Scalr.Method.BALANCED, targetWidth, targetHeight);
 
-            // Compress the image with the specified quality
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedResizedImage, "jpeg", outputStream);
+            ImageIO.write(resizedImage, "jpeg", outputStream);
 
-            return outputStream.toByteArray();
+            byte[] compressedImage = outputStream.toByteArray();
+            log.info("end - reduceImageQuality(): " + LocalDateTime.now());
+
+            return compressedImage;
         } catch (IOException e) {
             log.error("Error reducing image quality");
             throw new RuntimeException(e);
