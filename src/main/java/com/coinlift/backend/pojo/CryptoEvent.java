@@ -23,6 +23,9 @@ public class CryptoEvent {
         this.isConference = isConference;
     }
 
+    public CryptoEvent() {
+    }
+
     public String getCryptoName() {
         return cryptoName;
     }
