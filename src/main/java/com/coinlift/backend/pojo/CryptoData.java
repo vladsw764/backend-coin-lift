@@ -38,6 +38,9 @@ public class CryptoData {
         this.circulatingSupply = circulatingSupply;
     }
 
+    public CryptoData() {
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }

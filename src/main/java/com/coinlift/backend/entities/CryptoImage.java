@@ -16,14 +16,19 @@ public class CryptoImage {
 
     private String cryptoName;
 
-    public CryptoImage() {
-    }
-
     public CryptoImage(Long id, Integer cryptoId, String cryptoImageUrl, String cryptoName) {
         this.id = id;
         this.cryptoId = cryptoId;
         this.cryptoImageUrl = cryptoImageUrl;
         this.cryptoName = cryptoName;
+    }
+
+    public CryptoImage() {
+    }
+
+    public CryptoImage(Integer cryptoId, String cryptoImageUrl) {
+        this.cryptoId = cryptoId;
+        this.cryptoImageUrl = cryptoImageUrl;
     }
 
     public Long getId() {
