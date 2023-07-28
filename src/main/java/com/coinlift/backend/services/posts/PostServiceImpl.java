@@ -200,15 +200,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public byte[] getPostImage(UUID postId) {
-        Post post = postRepository
-                .findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("post with id [%s] not found".formatted(postId)));
+        Post post = getPost(postId);
+        String imageLink = post.getImageLink();
 
-        if (post.getImageLink() == null) {
+        if (imageLink == null) {
             return null;
         }
 
-        if (post.getImageLink().isBlank()) {
+        if (imageLink.isBlank()) {
             throw new ResourceNotFoundException("post with id [%s] post image  not found".formatted(postId));
         }
 
