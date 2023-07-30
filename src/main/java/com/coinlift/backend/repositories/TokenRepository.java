@@ -16,4 +16,11 @@ public interface TokenRepository extends JpaRepository<AuthenticationToken, Long
     List<AuthenticationToken> findAllValidTokenByUserId(UUID userId);
 
     Optional<AuthenticationToken> findByToken(String token);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(t) > 0 THEN TRUE ELSE FALSE END
+            FROM Token t
+            WHERE t.token = :token AND (t.expired = FALSE AND t.revoked  = FALSE)
+            """)
+    boolean isValidToken(String token);
 }

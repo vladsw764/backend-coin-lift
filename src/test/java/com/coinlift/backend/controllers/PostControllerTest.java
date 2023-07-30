@@ -2,8 +2,8 @@ package com.coinlift.backend.controllers;
 
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
-import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.dtos.posts.PostShortResponseDto;
+import com.coinlift.backend.dtos.users.UserMainInfoDto;
 import com.coinlift.backend.services.posts.PostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,13 +18,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +46,7 @@ class PostControllerTest {
     PostService postService;
 
     private List<PostShortResponseDto> postShortResponseDtoList;
-    private List<PostResponseDto> postResponseDtoList;
+    private List<PostDetailsResponseDto> postResponseDtoList;
 
 
     @BeforeEach
@@ -59,11 +57,13 @@ class PostControllerTest {
         );
 
         postResponseDtoList = Arrays.asList(
-                new PostResponseDto(UUID.randomUUID(), "username_1", UUID.randomUUID(), "content_1",
-                        new byte[0], 2, LocalDateTime.now(), false),
-                new PostResponseDto(UUID.randomUUID(), "username_2", UUID.randomUUID(), "content_2",
-                        new byte[0], 5, LocalDateTime.now(), true)
+                new PostDetailsResponseDto(UUID.randomUUID(), "test content_1", new byte[0], true,
+                        LocalDateTime.now(), 3, 4, new UserMainInfoDto(UUID.randomUUID(), "username_1", "profileImageUrl_1", true)),
+
+                new PostDetailsResponseDto(UUID.randomUUID(), "test content_2", new byte[0], false,
+                        LocalDateTime.now(), 23, 44, new UserMainInfoDto(UUID.randomUUID(), "username_2", "profileImageUrl_2", false))
         );
+
     }
 
 
@@ -83,7 +83,9 @@ class PostControllerTest {
     void getAllPosts_returnsListOfPosts() throws Exception {
         int page = 0;
         int size = 20;
+
         when(postService.getAllPosts(page, size)).thenReturn(postResponseDtoList);
+
         mockMvc.perform(get("/api/v1/posts"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(postResponseDtoList.size()))
@@ -99,19 +101,18 @@ class PostControllerTest {
         int size = 20;
         Pageable pageable = PageRequest.of(page, size);
 
-        PostDetailsResponseDto responseDto = new PostDetailsResponseDto(
-                uuid, "username", UUID.randomUUID(), "content",
-                new byte[0], LocalDateTime.now(), new ArrayList<>(), true, false
-        );
+        UserMainInfoDto userMainInfoDto = new UserMainInfoDto(UUID.randomUUID(), "username_2", "profileImageUrl_2", false);
 
-        when(postService.getPostById(uuid, pageable)).thenReturn(responseDto);
+        PostDetailsResponseDto postResponseDto = new PostDetailsResponseDto(uuid, "test content_2",
+                new byte[0], false, LocalDateTime.now(), 23, 44, userMainInfoDto);
+
+        when(postService.getPostById(uuid, pageable)).thenReturn(postResponseDto);
 
         mockMvc.perform(get("/api/v1/posts/{uuid}", uuid)
                         .param("page", String.valueOf(page))
                         .param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid").value(uuid.toString()))
-                .andExpect(jsonPath("$.username").value("username"))
                 .andDo(print());
     }
 
@@ -122,7 +123,7 @@ class PostControllerTest {
 
         UUID postId = UUID.randomUUID();
 
-        when(postService.createPost(any(PostRequestDto.class), any(MultipartFile.class), any(Authentication.class))).thenReturn(postId);
+        when(postService.createPost(any(PostRequestDto.class), any(MultipartFile.class))).thenReturn(postId);
 
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "file",
@@ -155,9 +156,10 @@ class PostControllerTest {
         UUID postId = UUID.randomUUID();
 
         PostRequestDto postRequestDto = new PostRequestDto("test content");
-        PostResponseDto postResponseDto = new PostResponseDto(postId, "user_1", UUID.randomUUID(), "test content", new byte[0], 1, LocalDateTime.now(), false);
+        UserMainInfoDto userMainInfoDto = new UserMainInfoDto(UUID.randomUUID(), "username_2", "profileImageUrl_2", false);
 
-
+        PostDetailsResponseDto postResponseDto = new PostDetailsResponseDto(postId, "test content",
+                new byte[0], false, LocalDateTime.now(), 23, 44, userMainInfoDto);
         when(postService.updatePost(eq(postId), any(PostRequestDto.class))).thenReturn(postResponseDto);
 
         mockMvc.perform(patch("/api/v1/posts/{postId}", postId)
@@ -166,8 +168,7 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid", is(postId.toString())))
                 .andExpect(jsonPath("$.content", is("test content")))
-                .andExpect(jsonPath("$.username", is("user_1")))
-                .andExpect(jsonPath("$.commentCount", is(1)))
+                .andExpect(jsonPath("$.commentCount", is(23)))
                 .andDo(print());
     }
 

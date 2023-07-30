@@ -112,7 +112,7 @@ class CryptocurrencyControllerTest {
 
     @Test
     void getCryptocurrencyNews() throws Exception {
-        when(cryptocurrencyNewsService.getCoinDeskArticles()).thenReturn(cryptocurrencyNews);
+        when(cryptocurrencyNewsService.getNewsArticles()).thenReturn(cryptocurrencyNews);
 
         mockMvc.perform(get("/api/v1/cryptocurrency/news"))
                 .andExpect(status().isOk())

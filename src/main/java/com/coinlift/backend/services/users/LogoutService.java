@@ -16,6 +16,13 @@ public class LogoutService implements LogoutHandler {
         this.tokenRepository = tokenRepository;
     }
 
+    /**
+     * Logs out the user by invalidating the user's JWT token when the user performs a logout action.
+     *
+     * @param request        The HTTP request representing the logout action.
+     * @param response       The HTTP response for the logout action.
+     * @param authentication The Spring Security authentication object representing the authenticated user.
+     */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         final String authHeader = request.getHeader("Authorization");
