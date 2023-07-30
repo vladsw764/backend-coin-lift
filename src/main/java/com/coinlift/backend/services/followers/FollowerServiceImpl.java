@@ -1,6 +1,7 @@
 package com.coinlift.backend.services.followers;
 
 import com.coinlift.backend.dtos.users.FollowerResponseDto;
+import com.coinlift.backend.dtos.users.UserMainInfoDto;
 import com.coinlift.backend.entities.Follower;
 import com.coinlift.backend.entities.MyUserDetails;
 import com.coinlift.backend.entities.User;
@@ -29,6 +30,12 @@ public class FollowerServiceImpl implements FollowerService {
         this.followerRepository = followerRepository;
     }
 
+    /**
+     * Follows a user with the specified `followingId`.
+     *
+     * @param followingId The UUID of the user to be followed.
+     * @throws IllegalStateException If the current user is already following the specified user.
+     */
     @Override
     @Transactional
     public void followUser(UUID followingId) {
@@ -49,6 +56,12 @@ public class FollowerServiceImpl implements FollowerService {
         userRepository.saveAll(List.of(from, to));
     }
 
+    /**
+     * Unfollows a user with the specified `followingId`.
+     *
+     * @param followingId The UUID of the user to be unfollowed.
+     * @throws IllegalStateException If the current user is not following the specified user.
+     */
     @Override
     @Transactional
     public void unfollowUser(UUID followingId) {
@@ -71,16 +84,54 @@ public class FollowerServiceImpl implements FollowerService {
         }
     }
 
+    /**
+     * Retrieves the main information of a user with the specified `userId`.
+     *
+     * @param userId The UUID of the user whose main information is to be retrieved.
+     * @return The `UserMainInfoDto` containing user main information.
+     */
+    @Override
+    public UserMainInfoDto getUserMainInfo(UUID userId) {
+        UUID currentUserId = getUserIdOrNull();
+        User user = getUserById(userId);
+
+        return new UserMainInfoDto(
+                userId,
+                user.getUsername(),
+                null, // TODO: implement methods that allow to add the profile image
+                followerRepository.existsByFrom_IdAndTo_Id(currentUserId, userId)
+        );
+    }
+
+    /**
+     * Retrieves a list of followers for the user with the specified `userId`.
+     *
+     * @param userId The UUID of the user whose followers are to be retrieved.
+     * @return A list of `FollowerResponseDto` objects containing follower information.
+     */
     @Override
     public List<FollowerResponseDto> getFollowers(UUID userId) {
         return followerRepository.findAllByToId(userId);
     }
 
+    /**
+     * Retrieves a list of users that the user with the specified `userId` is following.
+     *
+     * @param userId The UUID of the user whose following list is to be retrieved.
+     * @return A list of `FollowerResponseDto` objects containing following information.
+     */
     @Override
     public List<FollowerResponseDto> getFollowing(UUID userId) {
         return followerRepository.findAllByFromId(userId);
     }
 
+    /**
+     * Retrieves the count of followers for the user with the specified `userId`.
+     *
+     * @param userId The UUID of the user whose follower count is to be retrieved.
+     * @return The count of followers.
+     * @throws ResourceNotFoundException If the user with the given `userId` is not found.
+     */
     @Override
     public int getFollowerCount(UUID userId) {
         return userRepository.findById(userId)
@@ -88,6 +139,13 @@ public class FollowerServiceImpl implements FollowerService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", userId)));
     }
 
+    /**
+     * Retrieves the count of users that the user with the specified `userId` is following.
+     *
+     * @param userId The UUID of the user whose following count is to be retrieved.
+     * @return The count of following users.
+     * @throws ResourceNotFoundException If the user with the given `userId` is not found.
+     */
     @Override
     public int getFollowingCount(UUID userId) {
         return userRepository.findById(userId)
@@ -110,6 +168,15 @@ public class FollowerServiceImpl implements FollowerService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             throw new DeniedAccessException("You can't do it before authenticate!");
+        }
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        return userDetails.user().getId();
+    }
+
+    private UUID getUserIdOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return null;
         }
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         return userDetails.user().getId();

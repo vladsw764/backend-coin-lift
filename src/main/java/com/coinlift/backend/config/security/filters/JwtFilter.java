@@ -50,16 +50,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             MyUserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            boolean isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(token -> !token.isExpired() && !token.isRevoked())
-                    .orElse(false);
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+
+            if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                throw new IllegalArgumentException("Your session is expired and token is not valid.");
             }
         }
 

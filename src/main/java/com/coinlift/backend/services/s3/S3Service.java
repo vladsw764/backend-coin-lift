@@ -26,6 +26,13 @@ public class S3Service {
         this.s3 = s3;
     }
 
+    /**
+     * Uploads an object to the specified S3 bucket.
+     *
+     * @param bucketName The name of the S3 bucket.
+     * @param key        The unique key to identify the object in the bucket.
+     * @param file       The byte array representing the file to be uploaded.
+     */
     public void putObject(String bucketName, String key, byte[] file) {
 
         byte[] reducedImage = reduceImageQuality(file);
@@ -37,6 +44,14 @@ public class S3Service {
         s3.putObject(objectRequest, RequestBody.fromBytes(reducedImage));
     }
 
+    /**
+     * Retrieves an object from the specified S3 bucket.
+     *
+     * @param bucketName The name of the S3 bucket.
+     * @param key        The unique key to identify the object in the bucket.
+     * @return The byte array representing the retrieved object.
+     * @throws RuntimeException if an error occurs while getting the object.
+     */
     public byte[] getObject(String bucketName, String key) {
         GetObjectRequest objectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -50,6 +65,12 @@ public class S3Service {
         }
     }
 
+    /**
+     * Deletes an object from the specified S3 bucket.
+     *
+     * @param bucketName The name of the S3 bucket.
+     * @param key        The unique key to identify the object in the bucket.
+     */
     public void deleteObject(String bucketName, String key) {
         DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
@@ -59,7 +80,14 @@ public class S3Service {
         s3.deleteObject(objectRequest);
     }
 
-    public byte[] reduceImageQuality(byte[] imageBytes) {
+    /**
+     * Reduces the quality of an image represented by a byte array.
+     *
+     * @param imageBytes The byte array representing the image.
+     * @return The byte array of the compressed image.
+     * @throws RuntimeException if an error occurs while reducing the image quality.
+     */
+    private byte[] reduceImageQuality(byte[] imageBytes) {
         int targetWidth = 683;
         int targetHeight = 407;
 

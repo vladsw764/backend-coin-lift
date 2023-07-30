@@ -27,7 +27,12 @@ public class CryptocurrencyNewsService {
     private static final String HEADER_API_HOST = "X-RapidAPI-Host";
     private static final int ARTICLE_LIMIT = 8;
 
-    public List<CryptocurrencyNews> getCoinDeskArticles() {
+    /**
+     * Fetches the latest cryptocurrency news articles from the CoinTelegraph API.
+     *
+     * @return A list of `CryptocurrencyNews` objects, each representing a single cryptocurrency news article.
+     */
+    public List<CryptocurrencyNews> getNewsArticles() {
         List<CryptocurrencyNews> articles = new ArrayList<>();
         try {
             HttpResponse<String> response = getResponse();

@@ -37,6 +37,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Registers a new user in the system by validating the password and generating a JWT token upon successful registration.
+     *
+     * @param userRegistrationRequest The user registration request containing user details.
+     * @return An AuthenticationResponse containing the generated JWT token upon successful registration.
+     * @throws IllegalArgumentException if the password and confirm password do not match during registration.
+     */
     @Override
     public AuthenticationResponse register(UserRegistrationRequest userRegistrationRequest) {
         String pass = userRegistrationRequest.password();
@@ -64,6 +71,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    /**
+     * Authenticates a user by validating the provided email and password and generates a new JWT token upon successful authentication.
+     *
+     * @param userRegistrationRequest The user authentication request containing the user's email and password.
+     * @return An AuthenticationResponse containing the generated JWT token upon successful authentication.
+     */
     @Override
     public AuthenticationResponse authenticate(UserAuthenticationRequest userRegistrationRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
