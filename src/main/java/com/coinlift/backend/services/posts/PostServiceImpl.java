@@ -1,22 +1,17 @@
 package com.coinlift.backend.services.posts;
 
 import com.coinlift.backend.config.s3.S3Buckets;
-import com.coinlift.backend.dtos.comments.CommentResponseDto;
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
-import com.coinlift.backend.dtos.posts.PostResponseDto;
 import com.coinlift.backend.dtos.posts.PostShortResponseDto;
-import com.coinlift.backend.entities.Comment;
 import com.coinlift.backend.entities.MyUserDetails;
 import com.coinlift.backend.entities.Post;
 import com.coinlift.backend.exceptions.DeniedAccessException;
 import com.coinlift.backend.exceptions.ResourceNotFoundException;
-import com.coinlift.backend.mappers.CommentMapper;
 import com.coinlift.backend.mappers.PostMapper;
-import com.coinlift.backend.repositories.CommentRepository;
-import com.coinlift.backend.repositories.FollowerRepository;
 import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.repositories.UserRepository;
+import com.coinlift.backend.services.followers.FollowerService;
 import com.coinlift.backend.services.s3.S3Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -40,27 +33,21 @@ public class PostServiceImpl implements PostService {
 
     private final PostMapper postMapper;
 
-    private final CommentMapper commentMapper;
-
-    private final CommentRepository commentRepository;
-
-    private final FollowerRepository followerRepository;
-
     private final S3Service s3Service;
 
     private final S3Buckets s3Buckets;
 
     private final UserRepository userRepository;
 
-    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, CommentMapper commentMapper, CommentRepository commentRepository, FollowerRepository followerRepository, S3Service s3Service, S3Buckets s3Buckets, UserRepository userRepository) {
+    private final FollowerService followerService;
+
+    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, S3Service s3Service, S3Buckets s3Buckets, UserRepository userRepository, FollowerService followerService) {
         this.postRepository = postRepository;
         this.postMapper = postMapper;
-        this.commentMapper = commentMapper;
-        this.commentRepository = commentRepository;
-        this.followerRepository = followerRepository;
         this.s3Service = s3Service;
         this.s3Buckets = s3Buckets;
         this.userRepository = userRepository;
+        this.followerService = followerService;
     }
 
     private Post getPost(UUID postId) {
@@ -69,36 +56,58 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("post with id [%s] not found".formatted(postId)));
     }
 
+    /**
+     * Retrieves the latest posts.
+     *
+     * @return A list of `PostShortResponseDto` representing the latest posts.
+     */
     @Override
     public List<PostShortResponseDto> getLatestPosts() {
-        return postRepository.findLatestPosts().stream().map(postMapper::toPostShortResponseDto)
-                .peek(post -> post.setImage(getPostImage(post.getUuid()))).toList();
+        return postRepository.findLatestPosts().stream()
+                .map(post -> {
+                    byte[] image = getPostImage(post.getId());
+
+                    return new PostShortResponseDto(
+                            post.getId(),
+                            post.getContent(),
+                            image,
+                            0
+                    );
+                })
+                .toList();
     }
 
+    /**
+     * Retrieves a specific post by its ID.
+     *
+     * @param postId   The ID of the post to retrieve.
+     * @param pageable The Pageable object used for pagination.
+     * @return The PostDetailsResponseDto representing the requested post.
+     * @throws ResourceNotFoundException if the post with the given ID is not found.
+     */
     @Override
     public PostDetailsResponseDto getPostById(UUID postId, Pageable pageable) {
-        UUID userId;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!(auth instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-            userId = userDetails.user().getId();
-        } else userId = null;
-
         Post post = getPost(postId);
-        List<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
-        List<CommentResponseDto> commentResponseDtoList = comments.stream().map(commentMapper::toCommentResponseDto).toList();
+        byte[] postImage = getPostImage(postId);
 
-        commentResponseDtoList.forEach(comment ->
-                comment.setCommentCreator(userId != null && userId.equals(comment.getUserId()))
+        return new PostDetailsResponseDto(
+                postId,
+                post.getContent(),
+                postImage,
+                isCreator(getUserIdOrNull(), post),
+                post.getCreatedAt(),
+                post.getComments().size(),
+                0,
+                followerService.getUserMainInfo(post.getUser().getId())
         );
-        PostDetailsResponseDto postDto = postMapper.toPostDetailsResponseDto(post, commentResponseDtoList);
-        postDto.setImage(getPostImage(postId));
-        postDto.setCreator(userId != null && isCreator(userId, post));
-        postDto.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, postDto.getCreatorId()));
-
-        return postDto;
     }
 
+    /**
+     * Removes a post by its ID.
+     *
+     * @param postId The ID of the post to remove.
+     * @throws DeniedAccessException if the user does not have permission to remove the post.
+     */
     @Override
     public void removePost(UUID postId) {
         UUID userId = getUserId();
@@ -113,9 +122,17 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    /**
+     * Creates a new post.
+     *
+     * @param postRequestDto The PostRequestDto containing the details of the new post.
+     * @param file           The optional MultipartFile representing the post image.
+     * @return The ID of the newly created post.
+     * @throws ResourceNotFoundException if the user is not found when trying to create the post.
+     */
     @Override
-    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file, Authentication authentication) {
-        UUID userId = getUserIdNew(authentication);
+    public UUID createPost(PostRequestDto postRequestDto, MultipartFile file) {
+        UUID userId = getUserId();
 
         Post post = postMapper.toPostEntity(postRequestDto);
         post.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found")));
@@ -135,11 +152,19 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post).getId();
     }
 
+    /**
+     * Updates a post by its ID.
+     *
+     * @param postId         The ID of the post to update.
+     * @param postRequestDto The PostRequestDto containing the updated post details.
+     * @return The PostDetailsResponseDto representing the updated post.
+     * @throws DeniedAccessException if the user is not the creator of the post and not authorized to update it.
+     */
     @Override
-    public PostResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
+    public PostDetailsResponseDto updatePost(UUID postId, PostRequestDto postRequestDto) {
         Post post = getPost(postId);
         UUID userId = getUserId();
-        UUID followerId = getUserIdOrNull();
+        byte[] postImage = getPostImage(postId);
 
         if (!isCreator(userId, post)) {
             throw new DeniedAccessException("You don't have access, because you're not creator of this post!");
@@ -148,56 +173,54 @@ public class PostServiceImpl implements PostService {
         post.setContent(postRequestDto.content());
         postRepository.save(post);
 
-        PostResponseDto postResponseDto = postMapper.toPostResponseDto(post);
-        postResponseDto.setImage(getPostImage(postId));
-        postResponseDto.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(followerId, postResponseDto.getCreatorId()));
-
-        return postResponseDto;
+        return new PostDetailsResponseDto(
+                postId,
+                post.getContent(),
+                postImage,
+                true,
+                post.getCreatedAt(),
+                post.getComments().size(),
+                0,
+                followerService.getUserMainInfo(post.getUser().getId())
+        );
     }
 
-//    @Override
-//    public List<PostResponseDto> getAllPosts(int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<Post> postPage = postRepository.findAll(pageable);
-//        UUID userId = getUserIdOrNull();
-//
-//        return postPage.getContent().stream().map(postMapper::toPostResponseDto)
-//                .peek(post -> {
-//                    post.setImage(getPostImage(post.getUuid()));
-//                    post.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, post.getCreatorId()));
-//                }).toList();
-//    }
-
+    /**
+     * Retrieves all posts with pagination support.
+     *
+     * @param page The page number (0-indexed).
+     * @param size The number of items per page.
+     * @return A list of PostDetailsResponseDto representing the paginated posts.
+     */
     @Override
-    public List<PostResponseDto> getAllPosts(int page, int size) {
+    public List<PostDetailsResponseDto> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findAll(pageable);
-        UUID userId = getUserIdOrNull();
 
-        List<PostResponseDto> postResponseDtoList = postPage.getContent().stream()
-                .map(postMapper::toPostResponseDto)
-                .toList();
-
-        // Process each post in parallel using CompletableFutures
-        List<CompletableFuture<Void>> futures = postResponseDtoList.stream()
-                .map(postDto -> CompletableFuture.runAsync(() -> {
-                    postDto.setImage(getPostImage(postDto.getUuid()));
-                    postDto.setFollowing(followerRepository.existsByFrom_IdAndTo_Id(userId, postDto.getCreatorId()));
-                }))
-                .toList();
-
-        // Wait for all CompletableFutures to complete
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-        try {
-            allFutures.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-
-        return postResponseDtoList;
+        return postPage.getContent().stream()
+                .map(post -> {
+                    byte[] image = getPostImage(post.getId());
+                    Integer commentCount = post.getComments().size();
+                    return new PostDetailsResponseDto(
+                            post.getId(),
+                            post.getContent(),
+                            image,
+                            isCreator(getUserIdOrNull(), post),
+                            post.getCreatedAt(),
+                            commentCount,
+                            0,
+                            followerService.getUserMainInfo(post.getUser().getId())
+                    );
+                }).toList();
     }
 
-
+    /**
+     * Retrieves the image of a post by its ID.
+     *
+     * @param postId The ID of the post.
+     * @return The byte array representing the post image, or null if no image is found.
+     * @throws ResourceNotFoundException if the post image with the given ID is not found.
+     */
     @Override
     public byte[] getPostImage(UUID postId) {
         Post post = getPost(postId);
@@ -216,7 +239,7 @@ public class PostServiceImpl implements PostService {
         );
     }
 
-    public void removePostImage(UUID postId) {
+    private void removePostImage(UUID postId) {
         Post post = getPost(postId);
 
         if (post.getImageLink().isBlank()) {
@@ -237,14 +260,6 @@ public class PostServiceImpl implements PostService {
         return userDetails.user().getId();
     }
 
-    private static UUID getUserIdNew(Authentication authentication) {
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            throw new DeniedAccessException("You can't do it before authenticate!");
-        }
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        return userDetails.user().getId();
-    }
-
     private static UUID getUserIdOrNull() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
@@ -255,6 +270,9 @@ public class PostServiceImpl implements PostService {
     }
 
     private static boolean isCreator(UUID userId, Post post) {
+        if (userId == null) {
+            return false;
+        }
         return userId.equals(post.getUser().getId());
     }
 }

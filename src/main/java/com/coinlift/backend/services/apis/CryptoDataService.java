@@ -35,6 +35,11 @@ public class CryptoDataService {
 
     private final String url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
 
+    /**
+     * Retrieves data for the top cryptocurrencies.
+     *
+     * @return A list of CryptoData objects representing the latest data for the top cryptocurrencies.
+     */
     public List<CryptoData> getAllCryptoData() {
         String allDataParameters = "limit=11";
         JSONObject json = new JSONObject(getApiResponse(url, allDataParameters));
@@ -67,6 +72,11 @@ public class CryptoDataService {
 
     }
 
+    /**
+     * Retrieves percentage change data for the top cryptocurrencies.
+     *
+     * @return A list of CryptoPercentData objects representing the percentage change data for the top cryptocurrencies.
+     */
     public List<CryptoPercentData> getCryptoPercentData() {
         String percentDataParameters = "limit=5";
         String response = getApiResponse(url, percentDataParameters);
@@ -116,6 +126,13 @@ public class CryptoDataService {
         throw new RuntimeException("API response is empty.");
     }
 
+    /**
+     * Retrieves the image URL for a cryptocurrency by its ID.
+     *
+     * @param id The ID of the cryptocurrency for which to retrieve the image URL.
+     * @return The image URL of the cryptocurrency.
+     * @throws RuntimeException If there is an error connecting to the API or processing the response.
+     */
     private String getImageUrl(Integer id) {
         CryptoImage cryptoImage = cryptoImageRepository.findByCryptoId(id);
         if (cryptoImage != null) {

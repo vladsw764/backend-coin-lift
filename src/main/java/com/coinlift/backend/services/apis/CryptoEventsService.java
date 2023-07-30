@@ -29,6 +29,11 @@ public class CryptoEventsService {
     List<String> topCryptos = Arrays.asList("btc-bitcoin", "eth-ethereum",
             "bnb-binance-coin", "ada-cardano", "xrp-xrp");
 
+    /**
+     * Retrieves the latest crypto events for the top cryptocurrencies.
+     *
+     * @return A list of CryptoEvent objects representing the latest events.
+     */
     public List<CryptoEvent> getLatestCryptoEvents() {
         RestTemplate restTemplate = new RestTemplate();
 
