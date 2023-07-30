@@ -18,13 +18,25 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
+    /**
+     * Register a new user.
+     *
+     * @param userRegistrationRequest The UserRegistrationRequest object containing user registration details.
+     * @return A ResponseEntity containing an AuthenticationResponse object and HttpStatus OK if registration is successful.
+     */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody UserRegistrationRequest userRegistrationRequest) {
         return ResponseEntity.ok(authenticationService.register(userRegistrationRequest));
     }
 
+    /**
+     * Authenticate a user based on login credentials.
+     *
+     * @param userAuthenticationRequest The UserAuthenticationRequest object containing user login credentials.
+     * @return A ResponseEntity containing an AuthenticationResponse object and HttpStatus OK if authentication is successful.
+     */
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody UserAuthenticationRequest userRegistrationRequest) {
-        return ResponseEntity.ok(authenticationService.authenticate(userRegistrationRequest));
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody UserAuthenticationRequest userAuthenticationRequest) {
+        return ResponseEntity.ok(authenticationService.authenticate(userAuthenticationRequest));
     }
 }
