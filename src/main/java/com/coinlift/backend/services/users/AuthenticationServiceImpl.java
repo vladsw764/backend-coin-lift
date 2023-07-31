@@ -58,11 +58,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(userRegistrationRequest.emailAddress())
                 .password(passwordEncoder.encode(userRegistrationRequest.password()))
                 .role(Role.USER)
+                .imageUrl("af5be274-71e7-4561-98fd-b33f80f759cf")
                 .followersCount(0)
                 .followingCount(0)
                 .build();
+
         User savedUser = userRepository.save(user);
         MyUserDetails userDetails = new MyUserDetails(user);
+
         String jwtToken = jwtService.generateToken(userDetails);
         revokeUserTokens(savedUser);
         saveUserToken(savedUser, jwtToken);
