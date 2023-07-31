@@ -3,7 +3,6 @@ package com.coinlift.backend.controllers;
 import com.coinlift.backend.dtos.posts.PostDetailsResponseDto;
 import com.coinlift.backend.dtos.posts.PostRequestDto;
 import com.coinlift.backend.dtos.posts.PostShortResponseDto;
-import com.coinlift.backend.dtos.users.UserMainInfoDto;
 import com.coinlift.backend.services.posts.PostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,11 +56,10 @@ class PostControllerTest {
         );
 
         postResponseDtoList = Arrays.asList(
-                new PostDetailsResponseDto(UUID.randomUUID(), "test content_1", new byte[0], true,
-                        LocalDateTime.now(), 3, 4, new UserMainInfoDto(UUID.randomUUID(), "username_1", "profileImageUrl_1", true)),
-
-                new PostDetailsResponseDto(UUID.randomUUID(), "test content_2", new byte[0], false,
-                        LocalDateTime.now(), 23, 44, new UserMainInfoDto(UUID.randomUUID(), "username_2", "profileImageUrl_2", false))
+                new PostDetailsResponseDto(UUID.randomUUID(), UUID.randomUUID(), "test content_1", new byte[0], true,
+                        LocalDateTime.now(), 3, 4),
+                new PostDetailsResponseDto(UUID.randomUUID(), UUID.randomUUID(), "test content_2", new byte[0], false,
+                        LocalDateTime.now(), 23, 44)
         );
 
     }
@@ -101,10 +99,8 @@ class PostControllerTest {
         int size = 20;
         Pageable pageable = PageRequest.of(page, size);
 
-        UserMainInfoDto userMainInfoDto = new UserMainInfoDto(UUID.randomUUID(), "username_2", "profileImageUrl_2", false);
-
-        PostDetailsResponseDto postResponseDto = new PostDetailsResponseDto(uuid, "test content_2",
-                new byte[0], false, LocalDateTime.now(), 23, 44, userMainInfoDto);
+        PostDetailsResponseDto postResponseDto = new PostDetailsResponseDto(uuid, UUID.randomUUID(), "test content_2",
+                new byte[0], false, LocalDateTime.now(), 23, 44);
 
         when(postService.getPostById(uuid, pageable)).thenReturn(postResponseDto);
 
@@ -156,10 +152,9 @@ class PostControllerTest {
         UUID postId = UUID.randomUUID();
 
         PostRequestDto postRequestDto = new PostRequestDto("test content");
-        UserMainInfoDto userMainInfoDto = new UserMainInfoDto(UUID.randomUUID(), "username_2", "profileImageUrl_2", false);
 
-        PostDetailsResponseDto postResponseDto = new PostDetailsResponseDto(postId, "test content",
-                new byte[0], false, LocalDateTime.now(), 23, 44, userMainInfoDto);
+        PostDetailsResponseDto postResponseDto = new PostDetailsResponseDto(postId, UUID.randomUUID(), "test content",
+                new byte[0], false, LocalDateTime.now(), 23, 44);
         when(postService.updatePost(eq(postId), any(PostRequestDto.class))).thenReturn(postResponseDto);
 
         mockMvc.perform(patch("/api/v1/posts/{postId}", postId)

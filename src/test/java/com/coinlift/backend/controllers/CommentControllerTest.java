@@ -2,7 +2,6 @@ package com.coinlift.backend.controllers;
 
 import com.coinlift.backend.dtos.comments.CommentRequestDto;
 import com.coinlift.backend.dtos.comments.CommentResponseDto;
-import com.coinlift.backend.dtos.users.UserMainInfoDto;
 import com.coinlift.backend.services.comments.CommentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,8 +68,7 @@ class CommentControllerTest {
         UUID commentId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        UserMainInfoDto userMainInfoDto = new UserMainInfoDto(userId, "username", "image_url", true);
-        CommentResponseDto commentResponseDto = new CommentResponseDto(commentId, "test content", LocalDateTime.now(), true, userMainInfoDto);
+        CommentResponseDto commentResponseDto = new CommentResponseDto(commentId, userId, "test content", LocalDateTime.now(), true);
 
         when(commentService.updateComment(commentRequestDto, postId, commentId)).thenReturn(commentResponseDto);
 
