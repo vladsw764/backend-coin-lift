@@ -8,7 +8,7 @@ public record UserMainInfoDto(
 
         String username,
 
-        String profileImageUrl,
+        byte[] profileImage,
 
         boolean isFollowing
 ) {
