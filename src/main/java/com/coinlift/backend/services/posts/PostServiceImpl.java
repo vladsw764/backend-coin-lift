@@ -11,7 +11,6 @@ import com.coinlift.backend.exceptions.ResourceNotFoundException;
 import com.coinlift.backend.mappers.PostMapper;
 import com.coinlift.backend.repositories.PostRepository;
 import com.coinlift.backend.repositories.UserRepository;
-import com.coinlift.backend.services.followers.FollowerService;
 import com.coinlift.backend.services.s3.S3Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,15 +38,12 @@ public class PostServiceImpl implements PostService {
 
     private final UserRepository userRepository;
 
-    private final FollowerService followerService;
-
-    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, S3Service s3Service, S3Buckets s3Buckets, UserRepository userRepository, FollowerService followerService) {
+    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, S3Service s3Service, S3Buckets s3Buckets, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.postMapper = postMapper;
         this.s3Service = s3Service;
         this.s3Buckets = s3Buckets;
         this.userRepository = userRepository;
-        this.followerService = followerService;
     }
 
     private Post getPost(UUID postId) {
@@ -92,13 +88,13 @@ public class PostServiceImpl implements PostService {
 
         return new PostDetailsResponseDto(
                 postId,
+                post.getUser().getId(),
                 post.getContent(),
                 postImage,
                 isCreator(getUserIdOrNull(), post),
                 post.getCreatedAt(),
                 post.getComments().size(),
-                0,
-                followerService.getUserMainInfo(post.getUser().getId())
+                0
         );
     }
 
@@ -175,13 +171,13 @@ public class PostServiceImpl implements PostService {
 
         return new PostDetailsResponseDto(
                 postId,
+                post.getUser().getId(),
                 post.getContent(),
                 postImage,
                 true,
                 post.getCreatedAt(),
                 post.getComments().size(),
-                0,
-                followerService.getUserMainInfo(post.getUser().getId())
+                0
         );
     }
 
@@ -203,13 +199,13 @@ public class PostServiceImpl implements PostService {
                     Integer commentCount = post.getComments().size();
                     return new PostDetailsResponseDto(
                             post.getId(),
+                            post.getUser().getId(),
                             post.getContent(),
                             image,
                             isCreator(getUserIdOrNull(), post),
                             post.getCreatedAt(),
                             commentCount,
-                            0,
-                            followerService.getUserMainInfo(post.getUser().getId())
+                            0
                     );
                 }).toList();
     }

@@ -9,7 +9,6 @@ import com.coinlift.backend.exceptions.ResourceNotFoundException;
 import com.coinlift.backend.mappers.CommentMapper;
 import com.coinlift.backend.repositories.CommentRepository;
 import com.coinlift.backend.repositories.UserRepository;
-import com.coinlift.backend.services.followers.FollowerService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -29,13 +28,10 @@ public class CommentServiceImpl implements CommentService {
 
     private final UserRepository userRepository;
 
-    private final FollowerService followerService;
-
-    public CommentServiceImpl(CommentRepository commentRepository, CommentMapper commentMapper, UserRepository userRepository, FollowerService followerService) {
+    public CommentServiceImpl(CommentRepository commentRepository, CommentMapper commentMapper, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.commentMapper = commentMapper;
         this.userRepository = userRepository;
-        this.followerService = followerService;
     }
 
     /**
@@ -56,10 +52,10 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream()
                 .map(comment -> new CommentResponseDto(
                         comment.getId(),
+                        comment.getUser().getId(),
                         comment.getContent(),
                         comment.getCreatedAt(),
-                        isCreator(userId, comment),
-                        followerService.getUserMainInfo(comment.getUser().getId())
+                        isCreator(userId, comment)
                 )).toList();
     }
 
@@ -103,10 +99,10 @@ public class CommentServiceImpl implements CommentService {
 
         return new CommentResponseDto(
                 commentId,
+                comment.getUser().getId(),
                 commentRequestDto.content(),
                 comment.getCreatedAt(),
-                isCreator(postUserId, comment),
-                followerService.getUserMainInfo(postUserId)
+                isCreator(postUserId, comment)
         );
     }
 
