@@ -25,6 +25,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String imageUrl;
+
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
@@ -49,11 +51,12 @@ public class User {
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer followingCount;
 
-    public User(UUID id, String username, String email, String password, Role role, List<Comment> comments, List<Post> posts, List<AuthenticationToken> tokens, List<Follower> followers, Integer followersCount, List<Follower> following, Integer followingCount) {
+    public User(UUID id, String username, String email, String password, String imageUrl, Role role, List<Comment> comments, List<Post> posts, List<AuthenticationToken> tokens, List<Follower> followers, Integer followersCount, List<Follower> following, Integer followingCount) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.imageUrl = imageUrl;
         this.role = role;
         this.comments = comments;
         this.posts = posts;
@@ -97,6 +100,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Role getRole() {
