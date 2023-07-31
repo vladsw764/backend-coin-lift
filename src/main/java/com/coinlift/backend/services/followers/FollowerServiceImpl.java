@@ -1,5 +1,6 @@
 package com.coinlift.backend.services.followers;
 
+import com.coinlift.backend.config.s3.S3Buckets;
 import com.coinlift.backend.dtos.users.FollowerResponseDto;
 import com.coinlift.backend.dtos.users.UserMainInfoDto;
 import com.coinlift.backend.entities.Follower;
@@ -9,6 +10,7 @@ import com.coinlift.backend.exceptions.DeniedAccessException;
 import com.coinlift.backend.exceptions.ResourceNotFoundException;
 import com.coinlift.backend.repositories.FollowerRepository;
 import com.coinlift.backend.repositories.UserRepository;
+import com.coinlift.backend.services.s3.S3Service;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,9 +27,15 @@ public class FollowerServiceImpl implements FollowerService {
 
     private final FollowerRepository followerRepository;
 
-    public FollowerServiceImpl(UserRepository userRepository, FollowerRepository followerRepository) {
+    private final S3Service s3Service;
+
+    private final S3Buckets s3Buckets;
+
+    public FollowerServiceImpl(UserRepository userRepository, FollowerRepository followerRepository, S3Service s3Service, S3Buckets s3Buckets) {
         this.userRepository = userRepository;
         this.followerRepository = followerRepository;
+        this.s3Service = s3Service;
+        this.s3Buckets = s3Buckets;
     }
 
     /**
@@ -98,7 +106,7 @@ public class FollowerServiceImpl implements FollowerService {
         return new UserMainInfoDto(
                 userId,
                 user.getUsername(),
-                null, // TODO: implement methods that allow to add the profile image
+                getUserImage(user), // TODO: implement methods that allow to add the profile image
                 followerRepository.existsByFrom_IdAndTo_Id(currentUserId, userId)
         );
     }
@@ -180,5 +188,11 @@ public class FollowerServiceImpl implements FollowerService {
         }
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         return userDetails.user().getId();
+    }
+
+    private byte[] getUserImage(User user) {
+        return s3Service.getObject(s3Buckets.getCustomer(),
+                "user-profile-image/%s".formatted(user.getImageUrl())
+        );
     }
 }
